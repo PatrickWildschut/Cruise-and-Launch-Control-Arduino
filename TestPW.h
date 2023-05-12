@@ -1,7 +1,7 @@
 class Test : public Mode
 {
   private:
-    float volt = 0.74;
+    float volt = 0.7;
   
   public:
     void Setup()
@@ -9,15 +9,17 @@ class Test : public Mode
       CurrentMode = 3;
       setRelays(true);
 
-      volt = 0.74;
+      volt = 0.7;
+
+      lcd.setCursor(0, 0);
+      lcd.print("TESTING VOLTAGES");
     
       setBanner("Current mode: Test");
     }
     
     void Loop()
     {
-      lcd.setCursor(0, 0);
-      lcd.print("TESTING VOLTAGES");
+      
     
       bool success = SetVoltage(volt);
     

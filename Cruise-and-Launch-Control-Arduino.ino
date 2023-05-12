@@ -18,9 +18,9 @@ void setup() {
   lcd.init(); 
   lcd.backlight();
   MCP4725.begin(0x60);
+  SetVoltage(0);
 
-  pinMode(ThrottleIn1, INPUT);
-  pinMode(ThrottleIn2, INPUT);
+  pinMode(ThrottleIn, INPUT);
   pinMode(Relay1, OUTPUT);
   pinMode(Relay2, OUTPUT);
 

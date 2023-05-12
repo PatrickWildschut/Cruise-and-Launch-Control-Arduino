@@ -8,8 +8,9 @@ Mode* Modes[4];
 int CurrentMode = 0;
 
 // Connected pins
-const int ThrottleIn1 = A0;
-const int ThrottleIn2 = A2;
+const int ThrottleIn = A0;
+const int ClutchIn = A1;
+const int BrakeIn = A2;
 
 const uint8_t Relay1 = 12;
 const uint8_t Relay2 = 13;
