@@ -2,14 +2,20 @@
 
 // This file only exists for variables/functions that will be used across other files.
 
-LiquidCrystal_I2C lcd(0x27, 20, 4);
+// 0: Read. 1: Cruise control, 2: Launch control
+//template <class Mode>
+Mode* Modes[4];
+int CurrentMode = 0;
 
 // Connected pins
-const int Throttle3 = A0;
-const int Throttle6 = A1;
+const int ThrottleIn1 = A0;
+const int ThrottleIn2 = A2;
 
-void setBanner(String message)
+const uint8_t Relay1 = 12;
+const uint8_t Relay2 = 13;
+
+void setRelays(bool set)
 {
-  lcd.setCursor(0, 3);
-  lcd.print(message);
+  digitalWrite(Relay1, !set);
+  digitalWrite(Relay2, !set);
 }

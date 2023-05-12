@@ -1,15 +1,33 @@
 #pragma once
 
-void setupLaunch()
+class Launch : public Mode
 {
-  pinMode(Throttle3, OUTPUT);
-  pinMode(Throttle6, OUTPUT);
+  public:
+    void Setup()
+    {
+      CurrentMode = 2;
+      SetVoltage(0);
+    
+      setBanner("Current mode: Launch");
+    
+      setRelays(false);
+    }
+    
+    void Loop()
+    {
+      lcd.setCursor(0, 0);
+      lcd.print("To do...");
+    
+      TM1638.displayText("--------");
+    }
 
-  setBanner("Current mode: Launch");
-}
-
-void Launch()
-{
-  lcd.setCursor(0, 0);
-  lcd.print("To do...");
-}
+    void Trigger7()
+    {
+      
+    }
+  
+    void Trigger8()
+    {
+      
+    }
+};

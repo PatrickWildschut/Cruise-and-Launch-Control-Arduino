@@ -1,15 +1,33 @@
 #pragma once
 
-void setupCruise()
+class Cruise : public Mode
 {
-  pinMode(Throttle3, OUTPUT);
-  pinMode(Throttle6, OUTPUT);
+  public:
+    void Setup()
+    {
+      CurrentMode = 1;
+      SetVoltage(0);
+      
+      setBanner("Current mode: Cruise");
+    
+      setRelays(false);
+    }
+    
+    void Loop()
+    {
+      lcd.setCursor(0, 0);
+      lcd.print("To do...");
+    
+      TM1638.displayText("--------");
+    }
 
-  setBanner("Current mode: Cruise");
-}
+    void Trigger7()
+    {
+      
+    }
 
-void Cruise()
-{
-  lcd.setCursor(0, 0);
-  lcd.print("To do...");
-}
+    void Trigger8()
+    {
+      
+    }
+};
