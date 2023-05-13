@@ -6,6 +6,7 @@
 #include "TM1638PW.h"
 
 
+#include "LoginPW.h"
 #include "CruisePW.h"
 #include "LaunchPW.h"
 #include "ReadPW.h"
@@ -13,23 +14,24 @@
 
 void setup() {
   // put your setup code here, to run once:
-  setRelays(false);
+  setRelays(true);
   
   lcd.init(); 
   lcd.backlight();
   MCP4725.begin(0x60);
-  SetVoltage(0);
+  SetVoltage(0.5);
 
   pinMode(ThrottleIn, INPUT);
   pinMode(Relay1, OUTPUT);
   pinMode(Relay2, OUTPUT);
 
-  wakeDemo();
+  //wakeDemo();
 
   Modes[0] = static_cast<Mode *>(new Read());
   Modes[1] = static_cast<Mode *>(new Cruise());
   Modes[2] = static_cast<Mode *>(new Launch());
   Modes[3] = static_cast<Mode *>(new Test());
+  Modes[4] = static_cast<Mode *>(new Login());
 
   setupMode(CurrentMode);
 }
@@ -45,10 +47,9 @@ void setupMode(int newMode)
 }
 
 void loop() {
+  handleButtons();
 
   Modes[CurrentMode]->Loop();
-  
-  handleButtons();
   delay(100);
 }
 
@@ -86,6 +87,10 @@ void handleButtons()
     // button4 pressed
     case 8:
       setupMode(3);
+      break;
+    // button6 pressed
+    case 32:
+      Modes[CurrentMode]->Trigger6();
       break;
     // button7 pressed
     case 64:

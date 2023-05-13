@@ -2,10 +2,6 @@
 
 class Read : public Mode
 {
-  private:
-    float valueT = 0;
-    float valueC = 0;
-    float valueB = 0;
   
   public:
     void Setup()
@@ -20,25 +16,24 @@ class Read : public Mode
     
     void Loop()
     {
-      // Read pins
-      valueT = analogRead(ThrottleIn) * 5.0 / 1023.0;
-
-      valueC = analogRead(ClutchIn) * 5.0 / 1023.0;
-
-      valueB = analogRead(BrakeIn) * 5.0 / 1023.0;
     
       // Display to I2C
       lcd.setCursor(0, 0);
-      lcd.print("Throttle:     " + String(valueT) + (valueT > 0.7 ? " +" : "  "));
+      lcd.print("Throttle:     " + String(GetThrottle()) + String(ThrottlePressed() ? " +" : "  "));
 
       lcd.setCursor(0, 1);
-      lcd.print("Clutch:       " + String(valueC));
+      lcd.print("Clutch:       " + String(ClutchPressed() ? "++++" : "    "));
 
       lcd.setCursor(0, 2);
-      lcd.print("Brake:        " + String(valueB));
+      lcd.print("Brake:        " + String(BrakePressed() ? "++++" : "    "));
     
       // TEST
       TM1638.displayText("Reading");
+    }
+
+    void Trigger6()
+    {
+      
     }
 
     void Trigger7()

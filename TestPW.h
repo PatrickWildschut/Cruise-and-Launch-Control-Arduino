@@ -1,7 +1,7 @@
 class Test : public Mode
 {
   private:
-    float volt = 0.7;
+    float volt = 0.5;
   
   public:
     void Setup()
@@ -9,7 +9,7 @@ class Test : public Mode
       CurrentMode = 3;
       setRelays(true);
 
-      volt = 0.7;
+      volt = 0.5;
 
       lcd.setCursor(0, 0);
       lcd.print("TESTING VOLTAGES");
@@ -19,8 +19,6 @@ class Test : public Mode
     
     void Loop()
     {
-      
-    
       bool success = SetVoltage(volt);
     
       if (success) 
@@ -37,6 +35,11 @@ class Test : public Mode
         lcd.setCursor(1, 2);
         lcd.print("DAC Disconnected!");
       }
+    }
+
+    void Trigger6()
+    {
+      
     }
 
     void Trigger7()

@@ -20,6 +20,24 @@ void walkingLEDs()
   }
 }
 
+void flashLEDs()
+{
+  for(int i = 0; i < 8; i++)
+  {
+    TM1638.setLED(i, inverse);
+  }
+
+  inverse = !inverse;
+}
+
+void setLEDs(bool enabled)
+{
+  for(int i = 0; i < 8; i++)
+  {
+    TM1638.setLED(i, enabled);
+  }
+}
+
 // helping functions
 void demoLEDs()
 {

@@ -18,8 +18,32 @@ void LCDDemo()
   lcd.print("Copyright 2023");
 }
 
+void LCDreset()
+{
+  for(int i = 0; i < 3; i++)
+  {
+    lcd.setCursor(0, i);
+    lcd.print("                    ");
+  }
+}
+
+void LCDreset(int y)
+{
+  lcd.setCursor(0, y);
+  lcd.print("                    ");
+}
+
+void LCDprintMiddle(String text, uint8_t ypos)
+{
+  int length = text.length() / 2;
+
+  lcd.setCursor(length, ypos);
+  lcd.print(text);
+}
+
 void setBanner(String message)
 {
+  LCDreset();
   lcd.setCursor(0, 3);
   lcd.print(message);
 }
