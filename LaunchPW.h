@@ -9,13 +9,13 @@ class Launch : public Mode
   public:
     void Setup()
     {
+      SetVoltage(idleVoltage);
+      setRelays(false);
+
       reset();
       CurrentMode = 2;
-      SetVoltage(0);
     
       setBanner("Current mode: Launch");
-    
-      setRelays(false);
     }
     
     void Loop()
@@ -44,7 +44,7 @@ class Launch : public Mode
           LCDreset(0);
           LCDreset(2);
           setRelays(false);
-          SetVoltage(0);
+          SetVoltage(idleVoltage);
 
           lcd.setCursor(0, 1);
           lcd.print("    LAUNCHED!!!   ");
@@ -69,19 +69,21 @@ class Launch : public Mode
       TM1638.displayText("--------");
     }
 
+    void Trigger5(){}
+
     void Trigger6()
     {
-      
+      reset();
     }
 
     void Trigger7()
     {
-      
+      reset();
     }
   
     void Trigger8()
     {
-      
+      reset();
     }
 
     void reset()

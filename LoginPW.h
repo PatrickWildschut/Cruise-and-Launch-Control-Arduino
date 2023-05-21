@@ -7,6 +7,9 @@ class Login : public Mode
   public:
     void Setup()
     {
+      SetVoltage(idleVoltage);
+      setRelays(false);
+
       setBanner("  Login to use car");
     }
 
@@ -17,25 +20,25 @@ class Login : public Mode
 
       if(count > 3)
       {
-        // disable throttle
-        SetVoltage(0);
-
-        lcd.setCursor(3, 1);
-        lcd.print("Login Failed!");
-        lcd.setCursor(3, 2);
-        lcd.print("Car disabled.");
-        lcd.setCursor(0, 3);
-        lcd.print("--------------------");
+        // Wrong password
+        lockCar();
         return;
       }
 
       if(checkPass())
       {
+        LoggedIn = true;
+
+        lcd.clear();
+        TM1638.reset();
+
         CurrentMode = 0;
         Modes[CurrentMode]->Setup();
         return;
       }
     }
+
+    void Trigger5(){}
 
     void Trigger6()
     {
@@ -71,6 +74,19 @@ class Login : public Mode
       }
       lcd.setCursor(0, 1);
       lcd.print(text);
+    }
+
+    void lockCar()
+    {
+      // disable throttle, 0 volt should cause an error on the instrument cluster
+      SetVoltage(0);
+
+      lcd.setCursor(3, 1);
+      lcd.print("Login Failed!");
+      lcd.setCursor(3, 2);
+      lcd.print("Car disabled.");
+      lcd.setCursor(0, 3);
+      lcd.print("--------------------");
     }
 
     bool checkPass()

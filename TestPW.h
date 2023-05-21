@@ -1,41 +1,39 @@
 class Test : public Mode
 {
-  private:
-    float volt = 0.5;
   
   public:
     void Setup()
     {
-      CurrentMode = 3;
-      setRelays(true);
+      SetVoltage(idleVoltage);
+      setRelays(false);
 
-      volt = 0.5;
+      CurrentMode = 3;
+      lcd.clear();
 
       lcd.setCursor(0, 0);
-      lcd.print("TESTING VOLTAGES");
+      lcd.print("TESTING SPEED");
     
       setBanner("Current mode: Test");
     }
     
     void Loop()
     {
-      bool success = SetVoltage(volt);
-    
-      if (success) 
+      float duration = pulseIn(SpeedIn, HIGH, 5000000) / 10000.0;
+      float thing = 0;
+      
+      if(duration != 0)
       {
-        TM1638.displayText(String(volt / 2) + String(volt));
-
-        lcd.setCursor(3, 2);
-        lcd.print("DAC Connected!");
+        thing = (1 / duration) * 36;
       }
-      else 
-      {
-        TM1638.displayText("Failed!");
 
-        lcd.setCursor(1, 2);
-        lcd.print("DAC Disconnected!");
-      }
+      lcd.setCursor(0, 0);
+      lcd.print(String(duration));
+
+      lcd.setCursor(0, 2);
+      lcd.print(String(thing));
     }
+
+    void Trigger5(){}
 
     void Trigger6()
     {
@@ -44,15 +42,9 @@ class Test : public Mode
 
     void Trigger7()
     {
-      volt *= 0.9;
-
-      if(volt < 0) volt = 0;
     }
 
     void Trigger8()
     {
-      volt *= 1.1;
-
-      if(volt > 5) volt = 5;
     }
 };

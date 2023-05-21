@@ -6,12 +6,10 @@ class Read : public Mode
   public:
     void Setup()
     {
-      CurrentMode = 0;
-    
-      SetVoltage(0);
-    
-      setBanner("Current mode: Read");
+      SetVoltage(idleVoltage);
       setRelays(false);
+
+      CurrentMode = 0;
     }
     
     void Loop()
@@ -26,10 +24,15 @@ class Read : public Mode
 
       lcd.setCursor(0, 2);
       lcd.print("Brake:        " + String(BrakePressed() ? "++++" : "    "));
+
+      lcd.setCursor(0, 3);
+      lcd.print("Speed:        " + String(GetSpeed()));
     
       // TEST
       TM1638.displayText("Reading");
     }
+
+    void Trigger5(){}
 
     void Trigger6()
     {
