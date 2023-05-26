@@ -8,7 +8,6 @@ class Login : public Mode
     void Setup()
     {
       SetVoltage(idleVoltage);
-      setRelays(false);
 
       setBanner("  Login to use car");
     }

@@ -7,7 +7,7 @@
 bool LoggedIn = false;
 
 Mode* Modes[5];
-int CurrentMode = 4;
+short CurrentMode = 4;
 
 float idleVoltage = 0.6;
 
@@ -33,19 +33,45 @@ float GetThrottle()
 
 float GetSpeed()
 {
-  // wait for max      ->                  1 sec
-  float duration = pulseIn(SpeedIn, HIGH, 1000000)  / 10000.0;
+  // wait for max      ->                  0.1 sec -> otherwise it will return 0
+  float duration = pulseIn(SpeedIn, HIGH, 100000)  / 10000.0;
 
-  // don't divide by 0
+  // waited too long, but don't divide by 0
   if(duration == 0) return 0;
 
   // self made formula :)
-  return (1 / duration) * 37;
+  return (1 / duration) * 38;
+}
+
+float GetAcceleration()
+{
+  unsigned long deltaTime = millis();
+  float deltaSpeed = GetSpeed() / 3.6;
+
+  deltaTime = millis() - deltaTime;
+  deltaSpeed = GetSpeed() / 3.6 - deltaSpeed;
+
+  return deltaSpeed / (deltaTime / 1000);
+}
+
+float GetGForce()
+{
+  return GetAcceleration() / 9.81;
 }
 
 bool ThrottlePressed()
 {
-  if(analogRead(ThrottleIn) * 5.0 / 1023.0 > 1.2)
+  if(analogRead(ThrottleIn) * 5.0 / 1023.0 > 1)
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool ThrottlePressed(float minVolt)
+{
+  if(analogRead(ThrottleIn) * 5.0 / 1023.0 > minVolt)
   {
     return true;
   }

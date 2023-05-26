@@ -4,9 +4,10 @@ class Cruise : public Mode
 {
   private:
     float currentVoltage = 0;
+    float currentSpeed = 0;
     int desiredSpeed = -1;
     bool enabled = false;
-    bool right = false;
+    bool increaseDesiredSpeed = false;
     byte speedChangeFeedbackIndex = 0;
 
   public:
@@ -31,28 +32,16 @@ class Cruise : public Mode
       {
         lcd.print("Currently disabled");
         TM1638.displayText("--------");
+        setRelays(false);
         setLEDs(false);
         return;
       } 
 
-      cruiseEnabled();
+      controlSpeed();
 
-      // speed changed, show arrow on TM1638 and feedback on LCD for `speedChangeFeedbackIndex` amount of time
-      if(speedChangeFeedbackIndex > 0)
-      {
-        speedChangeFeedback();
-      } else
-      {
-        // speed not changed, show current voltage on TM1638.
-        TM1638.displayText("up  " + String(currentVoltage));
-      }
+      checkDesiredSpeedChanged();      
 
-      // Reset if any pedal is pressed
-      if(PedalPressed())
-      {
-        enabled = false;
-        reset();
-      }
+      checkPedalsPressed();
     }
 
     void Trigger5()
@@ -76,13 +65,19 @@ class Cruise : public Mode
 
         if(desiredSpeed <= 30)
           setCurrentSpeed();
-      } else{
-        // already enabled, increase speed by 5.
-        desiredSpeed += 5;
-      }
-        
 
-      
+        return;
+      }
+
+      // already enabled, increase speed by 5, also snap to closest 5 factor.
+      int remainder = desiredSpeed % 5;
+
+      if(remainder == 0) 
+      {
+        desiredSpeed += 5;
+      } else{
+        desiredSpeed += 5 - remainder;
+      }
     }
 
     void Trigger7()
@@ -90,7 +85,7 @@ class Cruise : public Mode
       desiredSpeed -= 1;
 
       speedChangeFeedbackIndex = 5;
-      right = false;
+      increaseDesiredSpeed = false;
 
       // Disable cruise control if desired speed too low
       if(desiredSpeed < 30) reset();
@@ -101,37 +96,64 @@ class Cruise : public Mode
       desiredSpeed += 1;
 
       speedChangeFeedbackIndex = 5;
-      right = true;
+      increaseDesiredSpeed = true;
     }
 
-    void reset()
-    {
-      lcd.clear();
-      setRelays(false);
-      currentVoltage = idleVoltage;
-      SetVoltage(idleVoltage);
-    }
-
-    void cruiseEnabled()
+    void controlSpeed()
     {
       lcdCruising();
 
       currentVoltage = calculateOptimalThrottlePosition();
 
       SetVoltage(currentVoltage);
-
-      setRelays(true);
       walkingLEDs();
     }
 
-    bool PedalPressed()
+    void checkDesiredSpeedChanged()
     {
-      return ClutchPressed() || BrakePressed() || ThrottlePressed();
+      // if speed changed, show arrow on TM1638 and feedback on LCD for `speedChangeFeedbackIndex` amount of time
+      if(speedChangeFeedbackIndex > 0)
+      {
+        speedChangeFeedback();
+      } else
+      {
+        // speed not changed, show current voltage on TM1638.
+        TM1638.displayText("Up  " + String(currentVoltage));
+      }
+    }
+
+    void checkPedalsPressed()
+    {
+      // clutch or brake are pressed, if so, reset
+      if(CBPressed())
+      {
+        enabled = false;
+        reset();
+        return;
+      }
+
+      // Check if throttle is pressed in more than the voltage we are providing
+      // if so, switch to physical pedal, otherwise, just keep cruise control enabled :)
+      setRelays(!ThrottlePressed(currentVoltage));
+    }
+
+    void reset()
+    {
+      lcd.clear();
+      setBanner("   Cruise Control  ");
+      setRelays(false);
+      currentVoltage = idleVoltage;
+      SetVoltage(idleVoltage);
+    }
+
+    bool CBPressed()
+    {
+      return ClutchPressed() || BrakePressed();
     }
 
     void speedChangeFeedback()
     {
-      TM1638arrowDisplay(right);
+      TM1638arrowDisplay(increaseDesiredSpeed);
       speedChangeFeedbackIndex -= 1;
     }
 
@@ -146,11 +168,22 @@ class Cruise : public Mode
 
     float calculateOptimalThrottlePosition()
     {
+      float ots = 0;
+
       // Compare speeds
-      int speedDifference = desiredSpeed - GetSpeed(); 
+      currentSpeed = GetSpeed();
+      float speedDifference = desiredSpeed - currentSpeed; 
+
+      if(speedDifference < 0)
+      {
+        // subtracting because power 2 with negative numbers will get positive :)
+        ots = throttleBasedOnDesiredSpeed() - pow(speedDifference, 2) * 0.01;
+      } else{
+        ots = throttleBasedOnDesiredSpeed() + pow(speedDifference, 2) * 0.01;
+      }
 
       // Optimal throttle position formula by me :)
-      float ots = throttleBasedOnDesiredSpeed() + pow(speedDifference, 2) * 0.01;
+      
 
       // lock to max and min voltage
       if(ots > 3)
@@ -173,17 +206,17 @@ class Cruise : public Mode
       lcd.print("Desired speed: " + String(desiredSpeed));
 
       lcd.setCursor(0, 2);
-      lcd.print("Current voltage:" + String(currentVoltage));
+      lcd.print("Current speed:" + String(currentSpeed));
     }
 
     void setCurrentSpeed()
     {
       // set to current speed if desired speed wasnt assigned yet
-      float currentSpeed = GetSpeed();
+      float speed = GetSpeed();
 
       if(currentSpeed >= 30)
       {
-        desiredSpeed = currentSpeed;
+        desiredSpeed = speed;
       } else{
         enabled = false;
         reset();

@@ -62,7 +62,7 @@ void loop() {
   else
     Modes[4]->Loop();
     
-  delay(100);
+  delay(50);
 }
 
 void wakeDemo()
@@ -82,48 +82,50 @@ void handleButtons()
 
   if(buttons == 0) 
   {
-    // reset all buttons to 'not clicked'
-    for(int i = 0; i < 8; i++)
-    {
-      Buttons[i] = false;
-    }
+    ButtonClicked = false;
 
     return;
   }
 
-  switch(buttons)
+  // on click check
+  // check if it wasn't already pressed
+  if(TM1638OnClick())
   {
-    // button1 pressed
-    case 1:
-      checkSetButtonClicked(0) ? setupMode(0) : void();
-      break;
-    // button2 pressed
-    case 2:
-      checkSetButtonClicked(1) ? setupMode(1) : void();
-      break;
-    // button3 pressed
-    case 4:
-      checkSetButtonClicked(2) ? setupMode(2) : void();
-      break;
-    // button4 pressed
-    case 8:
-      checkSetButtonClicked(3) ? setupMode(3) : void();
-      break;
-    // button5 pressed
-    case 16:
-      checkSetButtonClicked(4) ? Modes[CurrentMode]->Trigger5() : void();
-      break;
-    // button6 pressed
-    case 32:
-      checkSetButtonClicked(5) ? Modes[CurrentMode]->Trigger6() : void();
-      break;
-    // button7 pressed
-    case 64:
-      checkSetButtonClicked(6) ? Modes[CurrentMode]->Trigger7() : void();
-      break;
-    // button8 pressed
-    case 128:
-      checkSetButtonClicked(7) ? Modes[CurrentMode]->Trigger8() : void();
-      break;
+    switch(buttons)
+    {
+      // button1 pressed
+      case 1:
+        setupMode(0);
+        break;
+      // button2 pressed
+      case 2:
+        setupMode(1);
+        break;
+      // button3 pressed
+      case 4:
+        setupMode(2);
+        break;
+      // button4 pressed
+      case 8:
+        setupMode(3);
+        break;
+      // button5 pressed
+      case 16:
+        Modes[CurrentMode]->Trigger5();
+        break;
+      // button6 pressed
+      case 32:
+        Modes[CurrentMode]->Trigger6();
+        break;
+      // button7 pressed
+      case 64:
+        Modes[CurrentMode]->Trigger7();
+        break;
+      // button8 pressed
+      case 128:
+        Modes[CurrentMode]->Trigger8();
+        break;
+    }
   }
+  
 }

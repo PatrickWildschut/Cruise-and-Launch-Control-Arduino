@@ -7,8 +7,8 @@ TM1638lite TM1638(6, 3, 5);
 short index = 0;
 bool inverse = true;
 
-// buttons on TM1638
-bool Buttons[8];
+// check for clicked button on TM1638
+bool ButtonClicked;
 
 void walkingLEDs()
 {
@@ -86,13 +86,13 @@ void TM1638arrowDisplay(bool right)
 }
 
 // This checks if the button was already pressed, if so false, otherwise true. Used for button handling
-bool checkSetButtonClicked(short index)
+bool TM1638OnClick()
 {
-  if(Buttons[index])
+  if(ButtonClicked)
   {
     return false;
   }
 
-  Buttons[index] = true;
+  ButtonClicked = true;
   return true;
 }
