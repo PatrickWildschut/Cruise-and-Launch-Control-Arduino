@@ -13,14 +13,14 @@ class Cruise : public Mode
   public:
     void Setup()
     {
-      SetVoltage(idleVoltage);
       setRelays(false);
+      SetVoltage(idleVoltage);
 
       CurrentMode = 1;
       enabled = false;
       reset();
       
-      setBanner("   Cruise Control  ");
+      ShowBanner("   Cruise Control", true);
     }
     
     void Loop()
@@ -31,6 +31,13 @@ class Cruise : public Mode
       if(!enabled)
       {
         lcd.print("Currently disabled");
+
+        if(desiredSpeed != -1)
+        {
+          lcd.setCursor(0, 2);
+          lcd.print("Saved speed:   " + String(desiredSpeed));
+        }
+        
         TM1638.displayText("--------");
         setRelays(false);
         setLEDs(false);
@@ -42,6 +49,8 @@ class Cruise : public Mode
       checkDesiredSpeedChanged();      
 
       checkPedalsPressed();
+
+      delay(100);
     }
 
     void Trigger5()
@@ -134,13 +143,12 @@ class Cruise : public Mode
 
       // Check if throttle is pressed in more than the voltage we are providing
       // if so, switch to physical pedal, otherwise, just keep cruise control enabled :)
-      setRelays(!ThrottlePressed(currentVoltage));
+      setRelays(!ThrottlePressed(currentVoltage + 0.1));
     }
 
     void reset()
     {
       lcd.clear();
-      setBanner("   Cruise Control  ");
       setRelays(false);
       currentVoltage = idleVoltage;
       SetVoltage(idleVoltage);
@@ -186,9 +194,9 @@ class Cruise : public Mode
       
 
       // lock to max and min voltage
-      if(ots > 3)
+      if(ots > 2)
       {
-        ots = 3;
+        ots = 2;
       } else if(ots < 0.6)
       {
         ots = 0.6;
@@ -214,7 +222,7 @@ class Cruise : public Mode
       // set to current speed if desired speed wasnt assigned yet
       float speed = GetSpeed();
 
-      if(currentSpeed >= 30)
+      if(speed >= 30)
       {
         desiredSpeed = speed;
       } else{

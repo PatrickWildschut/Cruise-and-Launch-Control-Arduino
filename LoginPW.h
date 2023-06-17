@@ -31,6 +31,11 @@ class Login : public Mode
         lcd.clear();
         TM1638.reset();
 
+        setRelays(false);
+        SetVoltage(idleVoltage);
+
+        loggedInDemo();
+
         CurrentMode = 0;
         Modes[CurrentMode]->Setup();
         return;
@@ -69,6 +74,7 @@ class Login : public Mode
       String text = "";
       for(int i = 0; i < count; i++)
       {
+        if(i > 2) break;
         text += "*  ";
       }
       lcd.setCursor(0, 1);
@@ -93,4 +99,16 @@ class Login : public Mode
       return pass[0] == 2 && pass[1] == 1 &&
             pass[2] == 3;
     }
+
+    void loggedInDemo()
+    {
+      LCDDemo();
+      for(int i = 0; i < 7; i++)
+      {
+        demoLEDs();
+      }
+
+      lcd.clear();
+    }
+
 };

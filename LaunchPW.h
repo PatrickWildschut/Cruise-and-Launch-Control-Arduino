@@ -9,13 +9,13 @@ class Launch : public Mode
   public:
     void Setup()
     {
-      SetVoltage(idleVoltage);
       setRelays(false);
+      SetVoltage(idleVoltage);
 
       reset();
       CurrentMode = 2;
     
-      setBanner("Current mode: Launch");
+      ShowBanner("   Launch Control", true);
     }
     
     void Loop()
@@ -67,6 +67,8 @@ class Launch : public Mode
       }
 
       TM1638.displayText("--------");
+
+      delay(100);
     }
 
     void Trigger5(){}

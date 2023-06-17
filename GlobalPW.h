@@ -4,10 +4,10 @@
 
 // 0: Read. 1: Cruise control, 2: Launch control
 
-bool LoggedIn = false;
+bool LoggedIn = true;
 
 Mode* Modes[5];
-short CurrentMode = 4;
+short CurrentMode = 0;
 
 float idleVoltage = 0.6;
 
@@ -51,7 +51,7 @@ float GetAcceleration()
   deltaTime = millis() - deltaTime;
   deltaSpeed = GetSpeed() / 3.6 - deltaSpeed;
 
-  return deltaSpeed / (deltaTime / 1000);
+  return deltaSpeed / (deltaTime / 1000.0);
 }
 
 float GetGForce()
@@ -61,7 +61,7 @@ float GetGForce()
 
 bool ThrottlePressed()
 {
-  if(analogRead(ThrottleIn) * 5.0 / 1023.0 > 1)
+  if(analogRead(ThrottleIn) > 205)
   {
     return true;
   }
@@ -81,7 +81,7 @@ bool ThrottlePressed(float minVolt)
 
 bool ClutchPressed()
 {
-  if(analogRead(ClutchIn) * 5.0 / 1023.0 < 1)
+  if(analogRead(ClutchIn) < 205)
   {
     return true;
   }
@@ -91,7 +91,7 @@ bool ClutchPressed()
 
 bool BrakePressed()
 {
-  if(analogRead(BrakeIn) * 5.0 / 1023.0 > 1)
+  if(analogRead(BrakeIn) > 205)
   {
     return true;
   }

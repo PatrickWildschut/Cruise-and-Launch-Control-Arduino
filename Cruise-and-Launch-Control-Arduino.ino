@@ -1,16 +1,15 @@
-#include "Mode.h"
-#include "GlobalPW.h"
-
 #include "LCDPW.h"
 #include "DACPW.h"
 #include "TM1638PW.h"
 
+#include "Mode.h"
+#include "GlobalPW.h"
 
 #include "LoginPW.h"
 #include "CruisePW.h"
 #include "LaunchPW.h"
 #include "ReadPW.h"
-#include "TestPW.h"
+#include "SettingsPW.h"
 
 void setup() {
   // put your setup code here, to run once:
@@ -27,12 +26,10 @@ void setup() {
   SetVoltage(idleVoltage);
   setRelays(true);
 
-  wakeDemo();
-
   Modes[0] = static_cast<Mode *>(new Read());
   Modes[1] = static_cast<Mode *>(new Cruise());
   Modes[2] = static_cast<Mode *>(new Launch());
-  Modes[3] = static_cast<Mode *>(new Test());
+  Modes[3] = static_cast<Mode *>(new Settings());
   Modes[4] = static_cast<Mode *>(new Login());
 
   //Modes[CurrentMode]->Setup();
@@ -62,19 +59,8 @@ void loop() {
   else
     Modes[4]->Loop();
     
-  delay(50);
-}
-
-void wakeDemo()
-{
-  LCDDemo();
-  for(int i = 0; i < 7; i++)
-  {
-    demoLEDs();
-  }
-
-  lcd.clear();
-}
+  
+} // every Loop function within Mode must contain a delay()
 
 void handleButtons()
 {

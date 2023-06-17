@@ -10,11 +10,13 @@ class Read : public Mode
   public:
     void Setup()
     {
-      SetVoltage(idleVoltage);
       setRelays(false);
+      SetVoltage(idleVoltage);
 
       CurrentMode = 0;
       readIndex = 0;
+
+      ShowBanner("        Read", true);
     }
     
     void Loop()
@@ -28,6 +30,8 @@ class Read : public Mode
           readUtilities();
         break;
       }
+
+      delay(50);
     }
 
     void Trigger5(){}
@@ -54,7 +58,9 @@ class Read : public Mode
     {
       // Display to I2C
       lcd.setCursor(0, 0);
-      lcd.print("Throttle:     " + String(GetThrottle()) + String(ThrottlePressed() ? " +" : "  "));
+      lcd.print("Throttle:     " + GetThrottlePercentage());
+      lcd.setCursor(17, 0);
+      lcd.print("%");
 
       lcd.setCursor(0, 1);
       lcd.print("Clutch:       " + String(ClutchPressed() ? "++++" : "    "));
@@ -68,6 +74,21 @@ class Read : public Mode
       TM1638.displayText("Reading");
     }
 
+    String GetThrottlePercentage()
+    {
+      float throttle = GetThrottle() - 0.6;
+      int percentage = throttle / 4.0 * 100.0;
+
+      if(throttle <= 0) return "0 ";
+
+      if(throttle < 10)
+      {
+        return String(percentage) + " ";
+      }
+
+      return String(percentage);
+    }
+
     void readUtilities()
     {
       lcd.setCursor(0, 0);
@@ -75,5 +96,8 @@ class Read : public Mode
 
       lcd.setCursor(0, 1);
       lcd.print("Aceleration:" + String(GetAcceleration()) + "m/s2");
+
+      lcd.setCursor(0, 3);
+      lcd.print("Throttle:      " + String(GetThrottle()));
     }
 };

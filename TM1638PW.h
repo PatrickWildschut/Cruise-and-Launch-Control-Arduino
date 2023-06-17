@@ -73,6 +73,8 @@ void demoLEDs()
     
     delay(50);
   }
+
+  TM1638.setLED(0, 0);
 }
 
 void TM1638arrowDisplay(bool right)
