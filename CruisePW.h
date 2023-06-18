@@ -5,7 +5,7 @@ class Cruise : public Mode
   private:
     float currentVoltage = 0;
     float currentSpeed = 0;
-    int desiredSpeed = -1;
+    int desiredSpeed = 50;
     bool enabled = false;
     bool increaseDesiredSpeed = false;
     byte speedChangeFeedbackIndex = 0;
@@ -34,8 +34,8 @@ class Cruise : public Mode
 
         if(desiredSpeed != -1)
         {
-          lcd.setCursor(0, 2);
-          lcd.print("Saved speed:   " + String(desiredSpeed));
+          lcd.setCursor(2, 2);
+          lcd.print("Saved speed:  " + String(desiredSpeed));
         }
         
         TM1638.displayText("--------");
@@ -171,7 +171,7 @@ class Cruise : public Mode
 
       int difference = desiredSpeed - 50;
 
-      return 1.15 + (difference * 0.01);
+      return 1.18 + (difference * 0.01);
     }
 
     float throttleBasedOnCurrentSpeed()
@@ -205,7 +205,7 @@ class Cruise : public Mode
       // lock to max and min voltage
       if(ots > tCS + 0.5)
       {
-        ots = 2;
+        ots = tCS + 0.5;
       } else if(ots < idleVoltage)
       {
         ots = idleVoltage;

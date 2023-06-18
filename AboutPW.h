@@ -22,7 +22,7 @@ class About : public Mode
       lcd.print("Copyright 2023");
 
       lcd.setCursor(3, 3);
-      lcd.print("Version: 0.8.0");
+      lcd.print("Version: 0.8.1");
 
       walkingLEDs();
 

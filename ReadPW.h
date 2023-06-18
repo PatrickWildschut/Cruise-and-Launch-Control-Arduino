@@ -74,7 +74,7 @@ class Read : public Mode
       lcd.print("Speed:        " + String(GetSpeed()));
 
       LEDsBasedOnPercentage(percentage);
-      TM1638.displayText(String(GetSpeed()));
+      TM1638.displayText("    " + String(int(GetSpeed())));
     }
 
     String percentageText(short percentage)

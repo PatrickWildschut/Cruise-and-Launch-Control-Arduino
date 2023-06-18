@@ -4,10 +4,10 @@
 
 // 0: Read. 1: Cruise control, 2: Launch control
 
-bool LoggedIn = true;
+bool LoggedIn = false;
 
 Mode* Modes[5];
-short CurrentMode = 0;
+short CurrentMode = 4;
 
 float idleVoltage = 0.6;
 
