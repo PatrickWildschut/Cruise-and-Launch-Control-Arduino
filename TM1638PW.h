@@ -98,3 +98,31 @@ bool TM1638OnClick()
   ButtonClicked = true;
   return true;
 }
+
+void enableLEDsAmount(short amount)
+{
+  for(int i = 0; i < amount; i++)
+  {
+    TM1638.setLED(i, 1);
+  }
+
+  for(int i = 7; i >= amount; i--)
+  {
+    TM1638.setLED(i, 0);
+  }
+}
+
+void LEDsBasedOnPercentage(short percentage)
+{
+  short increment = 11;
+
+  for(short i = 1; i < 10; i++)
+  {
+    if(increment * i >= percentage)
+    {
+      enableLEDsAmount(i - 1);
+      break;
+    }
+  }
+  
+}

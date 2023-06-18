@@ -9,7 +9,7 @@
 #include "CruisePW.h"
 #include "LaunchPW.h"
 #include "ReadPW.h"
-#include "SettingsPW.h"
+#include "AboutPW.h"
 
 void setup() {
   // put your setup code here, to run once:
@@ -29,7 +29,7 @@ void setup() {
   Modes[0] = static_cast<Mode *>(new Read());
   Modes[1] = static_cast<Mode *>(new Cruise());
   Modes[2] = static_cast<Mode *>(new Launch());
-  Modes[3] = static_cast<Mode *>(new Settings());
+  Modes[3] = static_cast<Mode *>(new About());
   Modes[4] = static_cast<Mode *>(new Login());
 
   //Modes[CurrentMode]->Setup();

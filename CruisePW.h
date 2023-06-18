@@ -174,6 +174,15 @@ class Cruise : public Mode
       return 1.15 + (difference * 0.01);
     }
 
+    float throttleBasedOnCurrentSpeed()
+    {
+      // these static values are based on testing results
+
+      float difference = currentSpeed - 50.0;
+
+      return 1.15 + (difference * 0.01);
+    }
+
     float calculateOptimalThrottlePosition()
     {
       float ots = 0;
@@ -191,15 +200,15 @@ class Cruise : public Mode
       }
 
       // Optimal throttle position formula by me :)
-      
+      float tCS = throttleBasedOnCurrentSpeed();
 
       // lock to max and min voltage
-      if(ots > 2)
+      if(ots > tCS + 0.5)
       {
         ots = 2;
-      } else if(ots < 0.6)
+      } else if(ots < idleVoltage)
       {
-        ots = 0.6;
+        ots = idleVoltage;
       }
 
       return ots;

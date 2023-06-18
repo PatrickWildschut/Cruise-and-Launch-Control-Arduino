@@ -33,8 +33,8 @@ float GetThrottle()
 
 float GetSpeed()
 {
-  // wait for max      ->                  0.1 sec -> otherwise it will return 0
-  float duration = pulseIn(SpeedIn, HIGH, 100000)  / 10000.0;
+  // wait for max      ->                  0.125 sec -> otherwise it will return 0
+  float duration = pulseIn(SpeedIn, HIGH, 125000)  / 10000.0;
 
   // waited too long, but don't divide by 0
   if(duration == 0) return 0;
@@ -61,40 +61,20 @@ float GetGForce()
 
 bool ThrottlePressed()
 {
-  if(analogRead(ThrottleIn) > 205)
-  {
-    return true;
-  }
-
-  return false;
+  return analogRead(ThrottleIn) > 205;
 }
 
 bool ThrottlePressed(float minVolt)
 {
-  if(analogRead(ThrottleIn) * 5.0 / 1023.0 > minVolt)
-  {
-    return true;
-  }
-
-  return false;
+  return analogRead(ThrottleIn) * 5.0 / 1023.0 > minVolt;
 }
 
 bool ClutchPressed()
 {
-  if(analogRead(ClutchIn) < 205)
-  {
-    return true;
-  }
-
-  return false;
+  return analogRead(ClutchIn) < 205;
 }
 
 bool BrakePressed()
 {
-  if(analogRead(BrakeIn) > 205)
-  {
-    return true;
-  }
-
-  return false;
+  return analogRead(BrakeIn) > 205;
 }

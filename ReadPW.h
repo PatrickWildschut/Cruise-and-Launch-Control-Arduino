@@ -24,14 +24,14 @@ class Read : public Mode
       switch(readIndex)
       {
         case 0:
-          readPedalsSpeed();
+          readPedalsAndSpeed();
         break;
         case 1:
           readUtilities();
         break;
       }
 
-      delay(50);
+      delay(20);
     }
 
     void Trigger5(){}
@@ -54,11 +54,13 @@ class Read : public Mode
       if(readIndex > totalModes - 1) readIndex = 0;
     }
 
-    void readPedalsSpeed()
+    void readPedalsAndSpeed()
     {
+      short percentage = GetThrottlePercentage();
+
       // Display to I2C
       lcd.setCursor(0, 0);
-      lcd.print("Throttle:     " + GetThrottlePercentage());
+      lcd.print("Throttle:     " + percentageText(percentage));
       lcd.setCursor(17, 0);
       lcd.print("%");
 
@@ -71,22 +73,30 @@ class Read : public Mode
       lcd.setCursor(0, 3);
       lcd.print("Speed:        " + String(GetSpeed()));
 
-      TM1638.displayText("Reading");
+      LEDsBasedOnPercentage(percentage);
+      TM1638.displayText(String(GetSpeed()));
     }
 
-    String GetThrottlePercentage()
+    String percentageText(short percentage)
+    {
+      if(percentage < 10)
+      {
+        return String(percentage) + "  ";
+      }
+
+      return String(percentage) + " ";
+    }
+
+    short GetThrottlePercentage()
     {
       float throttle = GetThrottle() - 0.6;
       int percentage = throttle / 4.0 * 100.0;
 
-      if(throttle <= 0) return "0 ";
+      if(percentage <= 0) return 0;
 
-      if(throttle < 10)
-      {
-        return String(percentage) + " ";
-      }
+      if(percentage >= 100) return 100;
 
-      return String(percentage);
+      return percentage;
     }
 
     void readUtilities()
@@ -95,9 +105,13 @@ class Read : public Mode
       lcd.print("G Force: " + String(GetGForce())  + "g");
 
       lcd.setCursor(0, 1);
-      lcd.print("Aceleration:" + String(GetAcceleration()) + "m/s2");
+      lcd.print("a:       " + String(GetAcceleration()) + " m/s2");
 
       lcd.setCursor(0, 3);
-      lcd.print("Throttle:      " + String(GetThrottle()));
+      lcd.print("Throttle:    " + String(GetThrottle()));
+      lcd.setCursor(18, 3);
+      lcd.print("V");
+
+      LEDsBasedOnPercentage(GetThrottlePercentage());
     }
 };
