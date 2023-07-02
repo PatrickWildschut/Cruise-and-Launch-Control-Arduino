@@ -1,3 +1,5 @@
+#pragma once
+
 class About : public Mode
 {
   
@@ -22,7 +24,7 @@ class About : public Mode
       lcd.print("Copyright 2023");
 
       lcd.setCursor(3, 3);
-      lcd.print("Version: 0.8.1");
+      lcd.print("Version: 0.8.2");
 
       walkingLEDs();
 
@@ -35,5 +37,14 @@ class About : public Mode
 
     void Trigger7(){}
 
-    void Trigger8(){}
+    void Trigger8()
+    {
+      CurrentMode = 4;
+
+      Modes[CurrentMode]->Setup();
+
+      // lock car
+      LoggedIn = false;
+      
+    }
 };

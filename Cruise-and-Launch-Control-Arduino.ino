@@ -22,10 +22,6 @@ void setup() {
   pinMode(Relay1, OUTPUT);
   pinMode(Relay2, OUTPUT);
 
-  SetVoltage(0);
-  SetVoltage(idleVoltage);
-  setRelays(true);
-
   Modes[0] = static_cast<Mode *>(new Read());
   Modes[1] = static_cast<Mode *>(new Cruise());
   Modes[2] = static_cast<Mode *>(new Launch());

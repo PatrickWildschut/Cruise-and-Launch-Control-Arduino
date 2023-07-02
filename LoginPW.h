@@ -1,36 +1,44 @@
+#pragma once
+
 class Login : public Mode
 {
   private:
+    bool failed = false;
     short* pass[3];
     short count = 0;
 
   public:
     void Setup()
     {
+      lcd.clear();
       SetVoltage(idleVoltage);
+      setRelays(true);
 
       setBanner("  Login to use car");
+
+      lcd.setCursor(7, 0);
+      lcd.print("LOGIN");
     }
 
     void Loop()
     {
-      lcd.setCursor(7, 0);
-      lcd.print("LOGIN");
-
+      
       if(count > 3)
       {
         // Wrong password
         lockCar();
+        failed = true;
         return;
       }
 
-      if(checkPass())
+      if(checkPass() && !failed)
       {
         LoggedIn = true;
 
         lcd.clear();
         TM1638.reset();
 
+        reset();
         setRelays(false);
         SetVoltage(idleVoltage);
 
@@ -42,7 +50,11 @@ class Login : public Mode
       }
     }
 
-    void Trigger5(){}
+    void Trigger5()
+    {
+      reset();
+      print();
+    }
 
     void Trigger6()
     {
@@ -70,6 +82,7 @@ class Login : public Mode
 
     void print()
     {
+      LCDreset(1);
 
       String text = "";
       for(int i = 0; i < count; i++)
@@ -86,10 +99,12 @@ class Login : public Mode
       // disable throttle, 0 volt should cause an error on the instrument cluster
       SetVoltage(0);
 
-      lcd.setCursor(3, 1);
-      lcd.print("Login Failed!");
-      lcd.setCursor(3, 2);
-      lcd.print("Car disabled.");
+      lcd.setCursor(0, 0);
+      lcd.print("--------------------");
+      lcd.setCursor(0, 1);
+      lcd.print("   Login Failed!    ");
+      lcd.setCursor(0, 2);
+      lcd.print("   Car disabled.    ");
       lcd.setCursor(0, 3);
       lcd.print("--------------------");
     }
@@ -109,6 +124,16 @@ class Login : public Mode
       }
 
       lcd.clear();
+    }
+
+    void reset()
+    {
+      for(int i = 0; i < 3; i++)
+      {
+        pass[i] = 0;
+      }
+
+      count = 0;
     }
 
 };

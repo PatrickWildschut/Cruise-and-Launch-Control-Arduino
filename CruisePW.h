@@ -3,9 +3,15 @@
 class Cruise : public Mode
 {
   private:
+    const int minSpeed = 30;
+    const float baseVoltage50 = 1.17;
+
     float currentVoltage = 0;
+    float oldSetVoltage = 0;
+    short averageSpeedSize = 10;
+    float averageSpeed[10];
     float currentSpeed = 0;
-    int desiredSpeed = 50;
+    int desiredSpeed = -1;
     bool enabled = false;
     bool increaseDesiredSpeed = false;
     byte speedChangeFeedbackIndex = 0;
@@ -27,6 +33,7 @@ class Cruise : public Mode
     {
       lcd.setCursor(1, 0);
       
+      updateCurrentSpeed();
 
       if(!enabled)
       {
@@ -72,7 +79,7 @@ class Cruise : public Mode
       {
         enabled = true;
 
-        if(desiredSpeed <= 30)
+        if(desiredSpeed <= minSpeed)
           setCurrentSpeed();
 
         return;
@@ -97,7 +104,7 @@ class Cruise : public Mode
       increaseDesiredSpeed = false;
 
       // Disable cruise control if desired speed too low
-      if(desiredSpeed < 30) reset();
+      if(desiredSpeed < minSpeed) reset();
     }
 
     void Trigger8()
@@ -114,7 +121,16 @@ class Cruise : public Mode
 
       currentVoltage = calculateOptimalThrottlePosition();
 
-      SetVoltage(currentVoltage);
+      float difference = currentVoltage - oldSetVoltage;
+      difference = difference > 0 ? difference : -difference;
+
+      // only update DAC if there is a big enough difference to avoid EAC fail
+      if(difference > 0.02)
+      {
+        SetVoltage(currentVoltage);
+
+        oldSetVoltage = currentVoltage;
+      }
       walkingLEDs();
     }
 
@@ -143,7 +159,15 @@ class Cruise : public Mode
 
       // Check if throttle is pressed in more than the voltage we are providing
       // if so, switch to physical pedal, otherwise, just keep cruise control enabled :)
-      setRelays(!ThrottlePressed(currentVoltage + 0.1));
+      bool enabled = !ThrottlePressed(currentVoltage + 0.4);
+      
+      setRelays(enabled);
+
+      // if(enabled)
+      //   lcd.noBacklight();
+      // else
+      //   lcd.backlight();
+      
     }
 
     void reset()
@@ -171,7 +195,7 @@ class Cruise : public Mode
 
       int difference = desiredSpeed - 50;
 
-      return 1.18 + (difference * 0.01);
+      return baseVoltage50 + (difference * 0.01);
     }
 
     float throttleBasedOnCurrentSpeed()
@@ -180,7 +204,7 @@ class Cruise : public Mode
 
       float difference = currentSpeed - 50.0;
 
-      return 1.15 + (difference * 0.01);
+      return baseVoltage50 + (difference * 0.01);
     }
 
     float calculateOptimalThrottlePosition()
@@ -188,8 +212,7 @@ class Cruise : public Mode
       float ots = 0;
 
       // Compare speeds
-      currentSpeed = GetSpeed();
-      float speedDifference = desiredSpeed - currentSpeed; 
+      float speedDifference = desiredSpeed - currentSpeed;
 
       if(speedDifference < 0)
       {
@@ -224,6 +247,9 @@ class Cruise : public Mode
 
       lcd.setCursor(0, 2);
       lcd.print("Current speed:" + String(currentSpeed));
+
+      lcd.setCursor(0, 3);
+      lcd.print("DEBUG:        " + String(oldSetVoltage) + "v");
     }
 
     void setCurrentSpeed()
@@ -231,12 +257,31 @@ class Cruise : public Mode
       // set to current speed if desired speed wasnt assigned yet
       float speed = GetSpeed();
 
-      if(speed >= 30)
+      if(speed >= minSpeed)
       {
         desiredSpeed = speed;
       } else{
         enabled = false;
         reset();
       }
+    }
+
+    void updateCurrentSpeed()
+    {
+      // move all 1 to i - 1
+      for(int i = averageSpeedSize - 1; i > 0; i--)
+      {
+        averageSpeed[i - 1] = averageSpeed[i];
+      }
+      averageSpeed[averageSpeedSize - 1] = GetSpeed();
+
+      // count total
+      float speed = 0;
+      for(int i = 0; i < averageSpeedSize; i++)
+      {
+        speed += averageSpeed[i];
+      }
+
+      currentSpeed = speed / float(averageSpeedSize);
     }
 };
