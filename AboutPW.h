@@ -2,6 +2,10 @@
 
 class About : public Mode
 {
+  private:
+    byte aboutIndex = 0;
+    byte totalModes = 2;
+    float volt = 1;
   
   public:
     void Setup()
@@ -14,6 +18,21 @@ class About : public Mode
     
     void Loop()
     {
+      switch(aboutIndex)
+      {
+        case 0:
+          AboutPage();
+        break;
+        case 1:
+          DACTest();
+        break;
+      }
+
+      delay(100);
+    }
+
+    void AboutPage()
+    {
       lcd.setCursor(7, 0);
       lcd.print("Author:");
 
@@ -24,20 +43,21 @@ class About : public Mode
       lcd.print("Copyright 2023");
 
       lcd.setCursor(3, 3);
-      lcd.print("Version: 0.8.2");
+      lcd.print("Version: 0.8.4");
 
       walkingLEDs();
-
-      delay(100);
     }
 
-    void Trigger5(){}
+    void DACTest()
+    {
+      setRelays(true);
 
-    void Trigger6(){}
+      lcd.setCursor(0, 0);
+      lcd.print("Current volt: " + String(volt));
+      SetVoltage(volt);
+    }
 
-    void Trigger7(){}
-
-    void Trigger8()
+    void Trigger5()
     {
       CurrentMode = 4;
 
@@ -46,5 +66,26 @@ class About : public Mode
       // lock car
       LoggedIn = false;
       
+    }
+
+    void Trigger6()
+    {
+      volt += 0.1;
+    }
+  
+    void Trigger7()
+    {
+      lcd.clear();
+      aboutIndex -= 1;
+
+      if(aboutIndex < 0) aboutIndex = totalModes - 1;
+    }
+  
+    void Trigger8()
+    {
+      lcd.clear();
+      aboutIndex += 1;
+
+      if(aboutIndex > totalModes - 1) aboutIndex = 0;
     }
 };

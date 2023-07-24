@@ -4,7 +4,7 @@ class Cruise : public Mode
 {
   private:
     const int minSpeed = 30;
-    const float baseVoltage50 = 1.17;
+    const float baseVoltage50 = 1.15;
 
     float currentVoltage = 0;
     float oldSetVoltage = 0;
@@ -19,6 +19,7 @@ class Cruise : public Mode
   public:
     void Setup()
     {
+
       setRelays(false);
       SetVoltage(idleVoltage);
 
@@ -44,15 +45,25 @@ class Cruise : public Mode
           lcd.setCursor(2, 2);
           lcd.print("Saved speed:  " + String(desiredSpeed));
         }
+
+        lcd.setCursor(0, 3);
+        lcd.print("DEBUG:        " + String(oldSetVoltage) + "v");
+
+        currentVoltage = throttleBasedOnCurrentSpeed();
+        SetVoltage(currentVoltage);
+
+        oldSetVoltage = currentVoltage;
         
         TM1638.displayText("--------");
         setRelays(false);
         setLEDs(false);
         return;
-      } 
+      }  
+
+      lcdCruising();
+      walkingLEDs();
 
       controlSpeed();
-
       checkDesiredSpeedChanged();      
 
       checkPedalsPressed();
@@ -117,21 +128,17 @@ class Cruise : public Mode
 
     void controlSpeed()
     {
-      lcdCruising();
-
       currentVoltage = calculateOptimalThrottlePosition();
 
       float difference = currentVoltage - oldSetVoltage;
-      difference = difference > 0 ? difference : -difference;
 
-      // only update DAC if there is a big enough difference to avoid EAC fail
-      if(difference > 0.02)
+      // only update DAC if there is a difference to avoid EAC fail
+      if(difference != 0)
       {
         SetVoltage(currentVoltage);
 
         oldSetVoltage = currentVoltage;
       }
-      walkingLEDs();
     }
 
     void checkDesiredSpeedChanged()
@@ -159,14 +166,17 @@ class Cruise : public Mode
 
       // Check if throttle is pressed in more than the voltage we are providing
       // if so, switch to physical pedal, otherwise, just keep cruise control enabled :)
-      bool enabled = !ThrottlePressed(currentVoltage + 0.4);
+      bool enabled = !ThrottlePressed(currentVoltage - 0.3);
       
       setRelays(enabled);
 
-      // if(enabled)
-      //   lcd.noBacklight();
-      // else
-      //   lcd.backlight();
+      lcd.setCursor(0, 0);
+      if(enabled)
+      {
+        lcd.print("  Currently ENABLED ");
+      } else{
+        lcd.print("  Release Throttle..");
+      }
       
     }
 
@@ -239,9 +249,6 @@ class Cruise : public Mode
 
     void lcdCruising()
     {
-      lcd.setCursor(0, 0);
-      lcd.print("  Currently ENABLED ");
-
       lcd.setCursor(0, 1);
       lcd.print("Desired speed: " + String(desiredSpeed));
 

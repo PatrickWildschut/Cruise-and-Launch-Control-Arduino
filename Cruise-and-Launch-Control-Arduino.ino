@@ -16,6 +16,7 @@ void setup() {
   lcd.init(); 
   lcd.backlight();
   MCP4725.begin(0x60);
+  //TWBR = 12;
 
   pinMode(ThrottleIn, INPUT);
   pinMode(SpeedIn, INPUT);

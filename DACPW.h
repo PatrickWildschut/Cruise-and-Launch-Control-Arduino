@@ -9,5 +9,5 @@ bool SetVoltage(float volt)
 
   if(toAnalogOut > 4096) toAnalogOut = 4096;
   
-  return MCP4725.setVoltage(toAnalogOut, false, 100000);
+  return MCP4725.setVoltage(toAnalogOut, false);
 }
