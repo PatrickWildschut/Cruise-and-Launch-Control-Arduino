@@ -2,13 +2,13 @@
 
 // This file only exists for variables/functions that will be used across other files.
 
-// 0: Read. 1: Cruise control, 2: Launch control
+// 0: Read. 1: Cruise control, 2: Launch control 3: Settings 4: About 5: Login
 
 bool LoggedIn = false;
 
-Mode* Modes[5];
-short CurrentMode = 4; // default to login mode, mode 4 because counting from 0, aka login mode = 5
-short TotalModes = 3; // login mode doesnt count as a mode.
+Mode* Modes[6];
+short CurrentMode = 5; // default to login mode, mode 5 because counting from 0, aka login mode = 6
+short TotalModes = 4; // login mode doesnt count as a mode.
 
 float idleVoltage = 0.6;
 
@@ -20,6 +20,25 @@ const int SpeedIn = 12;
 
 const uint8_t Relay1 = 8;
 const uint8_t Relay2 = 9;
+
+// Layouts
+byte ReadModeLayout = 0;
+byte CruiseModeLayout = 0;
+byte MiscModeLayout = 0;
+
+void LoadLayouts()
+{
+  /* the EEPROM is used to write and read last chosen layouts.
+   i have set the EEPROM up like this:
+   0: Read Mode Layout -> 0: Horizontal 1: Vertical
+   1: Cruise Control Mode Layout -> 0: Horizontal 1: Vertical
+   2: Miscellaneous Mode Layout -> 0: Horizontal 1: Vertical
+  */
+
+  ReadModeLayout = EEPROM.read(0);
+  CruiseModeLayout = EEPROM.read(1);
+  MiscModeLayout = EEPROM.read(2);
+}
 
 void setRelays(bool set)
 {

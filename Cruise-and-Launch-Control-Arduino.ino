@@ -1,19 +1,20 @@
 /*
 
-Biggest update, version 0.9.0
-Whole new look, launch control mode will be replaced with miscellaneous mode
+Todo:
+Launch control mode will be replaced with miscellaneous mode
 
 miscellaneous mode:
 this mode has will have a speed limiter, launch control, the return of trip master
 
-The TM1638 will now always show a banner with what all the buttons do
+Settings:
+Layouts -> Horizontal (old), vertical (new)
 
-The buttons layout will be changed to:
-Button 1: Previous mode
-Buttons 2 - 7: Mode dependend buttons
-Button 8: Next mode
+All settings will be saved to the arduino EEPROM
 
 */
+
+// used to save settings.
+#include <EEPROM.h>
 
 #include "LCDPW.h"
 #include "DACPW.h"
@@ -26,6 +27,7 @@ Button 8: Next mode
 #include "CruisePW.h"
 #include "LaunchPW.h"
 #include "ReadPW.h"
+#include "SettingsPW.h"
 #include "AboutPW.h"
 
 void setup() {
@@ -43,8 +45,11 @@ void setup() {
   Modes[0] = static_cast<Mode *>(new Read());
   Modes[1] = static_cast<Mode *>(new Cruise());
   Modes[2] = static_cast<Mode *>(new Launch());
-  Modes[3] = static_cast<Mode *>(new About());
-  Modes[4] = static_cast<Mode *>(new Login());
+  Modes[3] = static_cast<Mode *>(new Settings());
+  Modes[4] = static_cast<Mode *>(new About());
+  Modes[5] = static_cast<Mode *>(new Login());
+
+  LoadLayouts();
 
   //Modes[CurrentMode]->Setup();
   setupMode(CurrentMode);
@@ -62,7 +67,7 @@ void setupMode(int index)
   {
     Modes[CurrentMode]->Setup();
   } else{
-    Modes[4]->Setup();
+    Modes[5]->Setup();
   }
 }
 
@@ -72,7 +77,7 @@ void loop() {
   if(LoggedIn)
     Modes[CurrentMode]->Loop();
   else
-    Modes[4]->Loop();   
+    Modes[5]->Loop();   
   
 } // every Loop function within Mode must contain a delay()
 
@@ -94,7 +99,7 @@ void handleButtons()
     // logged in check
     if(!LoggedIn)
     {
-      Modes[4]->ButtonReceiver(buttons);
+      Modes[5]->ButtonReceiver(buttons);
       return;
     }
 

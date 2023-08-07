@@ -26,7 +26,7 @@ class Read : public Mode
       switch(readIndex)
       {
         case 0:
-          Default2();
+          Default();
         break;
         case 1:
           readUtilities();
@@ -65,7 +65,19 @@ class Read : public Mode
       if(readIndex > totalModes - 1) readIndex = 0;
     }
 
-    void Default1()
+    void Default()
+    {
+      if(ReadModeLayout == 0)
+      {
+        Horizontal();
+      }
+      else
+      {
+        Vertical();
+      }
+    }
+
+    void Horizontal()
     {
       short percentage = GetThrottlePercentage();
 
@@ -88,7 +100,7 @@ class Read : public Mode
       //TM1638.displayText("    " + String(int(GetSpeed())));
     }
 
-    void Default2()
+    void Vertical()
     {
       short percentage = GetThrottlePercentage();
 
