@@ -25,7 +25,7 @@ All settings will be saved to the arduino EEPROM
 
 #include "LoginPW.h"
 #include "CruisePW.h"
-#include "LaunchPW.h"
+#include "MiscPW.h"
 #include "ReadPW.h"
 #include "SettingsPW.h"
 #include "AboutPW.h"
@@ -44,7 +44,7 @@ void setup() {
 
   Modes[0] = static_cast<Mode *>(new Read());
   Modes[1] = static_cast<Mode *>(new Cruise());
-  Modes[2] = static_cast<Mode *>(new Launch());
+  Modes[2] = static_cast<Mode *>(new Misc());
   Modes[3] = static_cast<Mode *>(new Settings());
   Modes[4] = static_cast<Mode *>(new About());
   Modes[5] = static_cast<Mode *>(new Login());

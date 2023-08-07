@@ -145,6 +145,7 @@ class Settings : public Mode
     {
       if(inMainMenu) return;
 
+      // Layouts
       if(currentSubMenu == 1)
       {
         // change the value of current selected mode

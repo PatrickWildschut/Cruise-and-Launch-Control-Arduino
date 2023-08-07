@@ -23,7 +23,6 @@ class Cruise : public Mode
       setRelays(false);
       SetVoltage(idleVoltage);
 
-      CurrentMode = 1;
       enabled = false;
       reset();
       

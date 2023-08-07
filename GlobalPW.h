@@ -68,7 +68,7 @@ float GetAcceleration()
   unsigned long deltaTime = millis();
   float deltaSpeed = GetSpeed() / 3.6;
 
-  delay(50);
+  delay(30);
 
   deltaTime = millis() - deltaTime;
   deltaSpeed = GetSpeed() / 3.6 - deltaSpeed;
@@ -79,6 +79,14 @@ float GetAcceleration()
 float GetGForce()
 {
   return GetAcceleration() / 9.81;
+}
+
+float GetDistance()
+{ 
+  float speed = GetSpeed() / 3.6;
+  delay(10);
+  
+  return speed / 100.0;
 }
 
 bool ThrottlePressed()

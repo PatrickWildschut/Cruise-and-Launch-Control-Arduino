@@ -13,7 +13,6 @@ class Read : public Mode
       setRelays(false);
       SetVoltage(idleVoltage);
 
-      CurrentMode = 0;
       readIndex = 0;
 
       ShowBanner("        Read", true);
