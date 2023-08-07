@@ -7,7 +7,8 @@
 bool LoggedIn = false;
 
 Mode* Modes[5];
-short CurrentMode = 4;
+short CurrentMode = 4; // default to login mode, mode 4 because counting from 0, aka login mode = 5
+short TotalModes = 3; // login mode doesnt count as a mode.
 
 float idleVoltage = 0.6;
 
@@ -47,6 +48,8 @@ float GetAcceleration()
 {
   unsigned long deltaTime = millis();
   float deltaSpeed = GetSpeed() / 3.6;
+
+  delay(50);
 
   deltaTime = millis() - deltaTime;
   deltaSpeed = GetSpeed() / 3.6 - deltaSpeed;

@@ -15,6 +15,7 @@ class Login : public Mode
       setRelays(true);
 
       setBanner("  Login to use car");
+      TM1638Banner(" LOGIN");
 
       lcd.setCursor(7, 0);
       lcd.print("LOGIN");
@@ -47,6 +48,25 @@ class Login : public Mode
         CurrentMode = 0;
         Modes[CurrentMode]->Setup();
         return;
+      }
+    }
+
+    void ButtonReceiver(short button)
+    {
+      switch(button)
+      {
+        case 8:
+          Trigger5();
+          break;
+        case 16:
+          Trigger6();
+          break;
+        case 32:
+          Trigger7();
+          break;
+        case 64:
+          Trigger8();
+          break;
       }
     }
 

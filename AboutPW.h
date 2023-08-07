@@ -14,6 +14,7 @@ class About : public Mode
       SetVoltage(idleVoltage); 
     
       ShowBanner("       About", false);
+      TM1638Banner("E. 00 .3");
     }
     
     void Loop()
@@ -31,8 +32,26 @@ class About : public Mode
       delay(100);
     }
 
+    void ButtonReceiver(short button)
+    {
+      switch (button)
+      {
+        case 2:
+          AboutBack();
+          break;
+        case 8: case 16:
+          Lock();
+          break;
+        case 64:
+          AboutNext();
+          break;
+      }
+    }
+
     void AboutPage()
     {
+      setRelays(false);
+
       lcd.setCursor(7, 0);
       lcd.print("Author:");
 
@@ -43,7 +62,7 @@ class About : public Mode
       lcd.print("Copyright 2023");
 
       lcd.setCursor(3, 3);
-      lcd.print("Version: 0.8.4");
+      lcd.print("Version: 0.9.0");
 
       walkingLEDs();
     }
@@ -57,9 +76,11 @@ class About : public Mode
       SetVoltage(volt);
     }
 
-    void Trigger5()
+    void Lock()
     {
       CurrentMode = 4;
+      TM1638.reset();
+      lcd.clear();
 
       Modes[CurrentMode]->Setup();
 
@@ -67,13 +88,8 @@ class About : public Mode
       LoggedIn = false;
       
     }
-
-    void Trigger6()
-    {
-      volt += 0.1;
-    }
   
-    void Trigger7()
+    void AboutBack()
     {
       lcd.clear();
       aboutIndex -= 1;
@@ -81,7 +97,7 @@ class About : public Mode
       if(aboutIndex < 0) aboutIndex = totalModes - 1;
     }
   
-    void Trigger8()
+    void AboutNext()
     {
       lcd.clear();
       aboutIndex += 1;

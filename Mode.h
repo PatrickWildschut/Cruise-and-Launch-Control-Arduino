@@ -7,14 +7,12 @@ class Mode
     virtual void Setup();
     virtual void Loop();
 
-    virtual void Trigger5();
-    virtual void Trigger6();
-    virtual void Trigger7();
-    virtual void Trigger8();
+    virtual void ButtonReceiver(short button);
 
     void ShowBanner(String text, boolean showModeText)
     {
        lcd.clear();
+       TM1638.reset();
        
        lcd.setCursor(0, 1);
        lcd.print(text);

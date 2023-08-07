@@ -71,19 +71,7 @@ class Launch : public Mode
       delay(100);
     }
 
-    void Trigger5(){}
-
-    void Trigger6()
-    {
-      reset();
-    }
-
-    void Trigger7()
-    {
-      reset();
-    }
-  
-    void Trigger8()
+    void ButtonReceiver(short button)
     {
       reset();
     }

@@ -1,3 +1,20 @@
+/*
+
+Biggest update, version 0.9.0
+Whole new look, launch control mode will be replaced with miscellaneous mode
+
+miscellaneous mode:
+this mode has will have a speed limiter, launch control, the return of trip master
+
+The TM1638 will now always show a banner with what all the buttons do
+
+The buttons layout will be changed to:
+Button 1: Previous mode
+Buttons 2 - 7: Mode dependend buttons
+Button 8: Next mode
+
+*/
+
 #include "LCDPW.h"
 #include "DACPW.h"
 #include "TM1638PW.h"
@@ -38,10 +55,11 @@ void setupMode(int index)
   lcd.clear();
   TM1638.reset();
 
+  if(CurrentMode < 0) CurrentMode = TotalModes;
+  if(CurrentMode > TotalModes) CurrentMode = 0;
+
   if(LoggedIn)
   {
-    CurrentMode = index;
-
     Modes[CurrentMode]->Setup();
   } else{
     Modes[4]->Setup();
@@ -54,8 +72,7 @@ void loop() {
   if(LoggedIn)
     Modes[CurrentMode]->Loop();
   else
-    Modes[4]->Loop();
-    
+    Modes[4]->Loop();   
   
 } // every Loop function within Mode must contain a delay()
 
@@ -74,41 +91,32 @@ void handleButtons()
   // check if it wasn't already pressed
   if(TM1638OnClick())
   {
+    // logged in check
+    if(!LoggedIn)
+    {
+      Modes[4]->ButtonReceiver(buttons);
+      return;
+    }
+
     switch(buttons)
     {
-      // button1 pressed
+      // Previous mode 1
       case 1:
-        setupMode(0);
+        CurrentMode -= 1;
+        setupMode(CurrentMode);
         break;
-      // button2 pressed
-      case 2:
-        setupMode(1);
-        break;
-      // button3 pressed
-      case 4:
-        setupMode(2);
-        break;
-      // button4 pressed
-      case 8:
-        setupMode(3);
-        break;
-      // button5 pressed
-      case 16:
-        Modes[CurrentMode]->Trigger5();
-        break;
-      // button6 pressed
-      case 32:
-        Modes[CurrentMode]->Trigger6();
-        break;
-      // button7 pressed
-      case 64:
-        Modes[CurrentMode]->Trigger7();
-        break;
-      // button8 pressed
+      
+      // Next mode button 8
       case 128:
-        Modes[CurrentMode]->Trigger8();
+        CurrentMode += 1;
+        setupMode(CurrentMode);
+        break;
+
+      // all mode dependend buttons
+      default:
+        Modes[CurrentMode]->ButtonReceiver(buttons);
         break;
     }
   }
-  
 }
+

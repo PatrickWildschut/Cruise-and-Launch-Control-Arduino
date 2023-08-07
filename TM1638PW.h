@@ -99,6 +99,11 @@ bool TM1638OnClick()
   return true;
 }
 
+void TM1638Banner(String banner)
+{
+  TM1638.displayText(banner);
+}
+
 void enableLEDsAmount(short amount)
 {
   for(int i = 0; i < amount; i++)

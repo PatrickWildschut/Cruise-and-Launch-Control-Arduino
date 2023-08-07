@@ -45,21 +45,13 @@ class Cruise : public Mode
           lcd.setCursor(2, 2);
           lcd.print("Saved speed:  " + String(desiredSpeed));
         }
-
-        lcd.setCursor(0, 3);
-        lcd.print("DEBUG:        " + String(oldSetVoltage) + "v");
-
-        currentVoltage = throttleBasedOnCurrentSpeed();
-        SetVoltage(currentVoltage);
-
-        oldSetVoltage = currentVoltage;
         
-        TM1638.displayText("--------");
+        TM1638Banner("Eno  <>3");
         setRelays(false);
         setLEDs(false);
         return;
       }  
-
+      TM1638Banner("E0  <>>3");
       lcdCruising();
       walkingLEDs();
 
@@ -71,21 +63,63 @@ class Cruise : public Mode
       delay(100);
     }
 
-    void Trigger5()
+    void ButtonReceiver(short button)
     {
-      // SWITCH ON OFF
-      // RESET TO OLD DESIRED SPEED
-
-      enabled = !enabled;
-
-      if(!enabled) { reset(); return; }
-
-      setCurrentSpeed();
+      if(enabled)
+      {
+        switch(button)
+        {
+          case 2:
+            enabled = false;
+            reset();
+            break;
+          case 16:
+            ChangeDesiredSpeed(-1, false);
+            break;
+          case 32:
+            ChangeDesiredSpeed(1, false);
+            break;
+          case 64:
+            ChangeDesiredSpeed(5, true);
+            break;
+        }
+      } else
+      {
+        // not enabled, buttons:
+        switch(button)
+        {
+          case 2:
+            OnNewSpeed();
+            break;
+          case 4:
+            OnOldSpeed();
+            break;
+          case 32:
+            ChangeDesiredSpeed(-5, true);
+            break;
+          case 64:
+            ChangeDesiredSpeed(5, true);
+            break;
+        }
+      }
+      
     }
 
-    void Trigger6()
+    void OnNewSpeed()
     {
-      // SET TO CURRENT SPEED
+      // SWITCH ON
+      // GET NEW SPEED BASED ON CURRENT SPEED
+      if(!enabled)
+      {
+        enabled = true;
+
+        setCurrentSpeed();
+      }
+    }
+
+    void OnOldSpeed()
+    {
+      // KEEP OLD DESIRED SPEED, UNLESS DESIRED SPEED IS TOO LOW
       if(!enabled)
       {
         enabled = true;
@@ -95,35 +129,28 @@ class Cruise : public Mode
 
         return;
       }
+    }
 
-      // already enabled, increase speed by 5, also snap to closest 5 factor.
-      int remainder = desiredSpeed % 5;
+    void ChangeDesiredSpeed(int amount, bool snap)
+    {
+      bool positive = amount > 0 ? true : false;
 
-      if(remainder == 0) 
+      // show on TM1638 display little animation
+      speedChangeFeedbackIndex = 5;
+      increaseDesiredSpeed = positive;
+
+      if(snap)
       {
-        desiredSpeed += 5;
-      } else{
-        desiredSpeed += 5 - remainder;
+        int remainder = desiredSpeed % amount;
+
+        desiredSpeed += amount - remainder;
+      } else
+      {
+        desiredSpeed += amount;
       }
-    }
 
-    void Trigger7()
-    {
-      desiredSpeed -= 1;
+      if(desiredSpeed < minSpeed) desiredSpeed = minSpeed;
 
-      speedChangeFeedbackIndex = 5;
-      increaseDesiredSpeed = false;
-
-      // Disable cruise control if desired speed too low
-      if(desiredSpeed < minSpeed) reset();
-    }
-
-    void Trigger8()
-    {
-      desiredSpeed += 1;
-
-      speedChangeFeedbackIndex = 5;
-      increaseDesiredSpeed = true;
     }
 
     void controlSpeed()
@@ -147,10 +174,6 @@ class Cruise : public Mode
       if(speedChangeFeedbackIndex > 0)
       {
         speedChangeFeedback();
-      } else
-      {
-        // speed not changed, show current voltage on TM1638.
-        TM1638.displayText("Up  " + String(currentVoltage));
       }
     }
 
@@ -254,9 +277,6 @@ class Cruise : public Mode
 
       lcd.setCursor(0, 2);
       lcd.print("Current speed:" + String(currentSpeed));
-
-      lcd.setCursor(0, 3);
-      lcd.print("DEBUG:        " + String(oldSetVoltage) + "v");
     }
 
     void setCurrentSpeed()

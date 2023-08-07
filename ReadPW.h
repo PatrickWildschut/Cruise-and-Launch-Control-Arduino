@@ -17,6 +17,8 @@ class Read : public Mode
       readIndex = 0;
 
       ShowBanner("        Read", true);
+
+      TM1638Banner("E.    .3");
     }
     
     void Loop()
@@ -24,7 +26,7 @@ class Read : public Mode
       switch(readIndex)
       {
         case 0:
-          readPedalsAndSpeed();
+          Default2();
         break;
         case 1:
           readUtilities();
@@ -34,11 +36,20 @@ class Read : public Mode
       delay(20);
     }
 
-    void Trigger5(){}
+    void ButtonReceiver(short button)
+    {
+      switch(button)
+      {
+        case 2:
+          ReadBack();
+          break;
+        case 64:
+          ReadNext();
+          break;
+      }
+    }
 
-    void Trigger6(){}
-
-    void Trigger7()
+    void ReadBack()
     {
       lcd.clear();
       readIndex -= 1;
@@ -46,7 +57,7 @@ class Read : public Mode
       if(readIndex < 0) readIndex = totalModes - 1;
     }
   
-    void Trigger8()
+    void ReadNext()
     {
       lcd.clear();
       readIndex += 1;
@@ -54,7 +65,7 @@ class Read : public Mode
       if(readIndex > totalModes - 1) readIndex = 0;
     }
 
-    void readPedalsAndSpeed()
+    void Default1()
     {
       short percentage = GetThrottlePercentage();
 
@@ -74,7 +85,35 @@ class Read : public Mode
       lcd.print("Speed:        " + String(GetSpeed()));
 
       LEDsBasedOnPercentage(percentage);
-      TM1638.displayText("    " + String(int(GetSpeed())));
+      //TM1638.displayText("    " + String(int(GetSpeed())));
+    }
+
+    void Default2()
+    {
+      short percentage = GetThrottlePercentage();
+
+      // Display to I2C
+      lcd.setCursor(1, 0);
+      lcd.print("Throttle    Speed");
+
+      lcd.setCursor(4, 1);
+      lcd.print(percentageText(percentage));
+
+      lcd.setCursor(7, 1);
+      lcd.print("%");
+
+      lcd.setCursor(13, 1);
+      lcd.print(String(GetSpeed()));
+
+      lcd.setCursor(2, 2);
+      lcd.print("Clutch     Brake");
+
+      lcd.setCursor(2, 3);
+      lcd.print(String(ClutchPressed() ? "++++++" : "      "));
+
+      lcd.setCursor(13, 3);
+      lcd.print(String(BrakePressed() ? "+++++" : "     "));
+
     }
 
     String percentageText(short percentage)
@@ -102,10 +141,14 @@ class Read : public Mode
     void readUtilities()
     {
       lcd.setCursor(0, 0);
-      lcd.print("G Force: " + String(GetGForce())  + "g");
+      lcd.print("G Force: " + String(GetGForce()));
+      lcd.setCursor(16, 0);
+      lcd.print("G");
 
       lcd.setCursor(0, 1);
-      lcd.print("a:       " + String(GetAcceleration()) + " m/s2");
+      lcd.print("a:       " + String(GetAcceleration()));
+      lcd.setCursor(15, 1);
+      lcd.print("m/s2");
 
       lcd.setCursor(0, 3);
       lcd.print("Throttle:    " + String(GetThrottle()));
