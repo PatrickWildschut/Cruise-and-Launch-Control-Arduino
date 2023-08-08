@@ -4,7 +4,7 @@ class Cruise : public Mode
 {
   private:
     const int minSpeed = 30;
-    const float baseVoltage50 = 1.15;
+    const float baseVoltage50 = 1.14;
 
     float currentVoltage = 0;
     float oldSetVoltage = 0;
@@ -50,8 +50,13 @@ class Cruise : public Mode
         setLEDs(false);
         return;
       }  
+
+      // cruise control is enabled
+
+      // choose layout
+      CruiseModeLayout == 0 ? Horizontal() : Vertical();
+
       TM1638Banner("E0  <>>3");
-      lcdCruising();
       walkingLEDs();
 
       controlSpeed();
@@ -195,9 +200,9 @@ class Cruise : public Mode
       lcd.setCursor(0, 0);
       if(enabled)
       {
-        lcd.print("  Currently ENABLED ");
+        lcd.print(" Currently ENABLED ");
       } else{
-        lcd.print("  Release Throttle..");
+        lcd.print(" Release Throttle..");
       }
       
     }
@@ -269,13 +274,28 @@ class Cruise : public Mode
       return ots;
     }
 
-    void lcdCruising()
+    void Horizontal()
     {
       lcd.setCursor(0, 1);
       lcd.print("Desired speed: " + String(desiredSpeed));
 
       lcd.setCursor(0, 2);
       lcd.print("Current speed:" + String(currentSpeed));
+    }
+
+    void Vertical()
+    {
+      lcd.setCursor(7, 1);
+      lcd.print("Speed");
+
+      lcd.setCursor(0, 2);
+      lcd.print(" Current   Desired");
+
+      lcd.setCursor(2, 3);
+      lcd.print(String(currentSpeed));
+
+      lcd.setCursor(13, 3);
+      lcd.print(String(desiredSpeed));
     }
 
     void setCurrentSpeed()

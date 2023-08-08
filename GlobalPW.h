@@ -86,7 +86,7 @@ float GetDistance()
   float speed = GetSpeed() / 3.6;
   delay(10);
   
-  return speed / 100.0;
+  return speed / 4.2;
 }
 
 bool ThrottlePressed()

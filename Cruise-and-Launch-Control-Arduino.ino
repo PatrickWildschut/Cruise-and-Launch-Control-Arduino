@@ -1,10 +1,9 @@
 /*
 
 Todo:
-Launch control mode will be replaced with miscellaneous mode
 
 miscellaneous mode:
-this mode has will have a speed limiter, launch control, the return of trip master
+this mode has will have: launch control, the return of trip master and <test mode>/<game>?
 
 Settings:
 Layouts -> Horizontal (old), vertical (new)

@@ -32,6 +32,8 @@ class Read : public Mode
         break;
       }
 
+      LEDsBasedOnPercentage(GetThrottlePercentage());
+
       delay(20);
     }
 
@@ -66,14 +68,7 @@ class Read : public Mode
 
     void Default()
     {
-      if(ReadModeLayout == 0)
-      {
-        Horizontal();
-      }
-      else
-      {
-        Vertical();
-      }
+      ReadModeLayout == 0 ? Horizontal() : Vertical();
     }
 
     void Horizontal()
@@ -94,8 +89,6 @@ class Read : public Mode
 
       lcd.setCursor(0, 3);
       lcd.print("Speed:        " + String(GetSpeed()));
-
-      LEDsBasedOnPercentage(percentage);
       //TM1638.displayText("    " + String(int(GetSpeed())));
     }
 
@@ -165,7 +158,5 @@ class Read : public Mode
       lcd.print("Throttle:    " + String(GetThrottle()));
       lcd.setCursor(18, 3);
       lcd.print("V");
-
-      LEDsBasedOnPercentage(GetThrottlePercentage());
     }
 };
