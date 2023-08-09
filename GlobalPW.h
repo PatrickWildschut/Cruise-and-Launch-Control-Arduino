@@ -50,6 +50,17 @@ float GetThrottle()
 {
   return analogRead(ThrottleIn) * 5.0 / 1023.0;
 }
+short GetThrottlePercentage()
+{
+  float throttle = GetThrottle() - 0.6;
+  int percentage = throttle / 4.0 * 100.0;
+
+  if(percentage <= 0) return 0;
+
+  if(percentage >= 100) return 100;
+
+  return percentage;
+}
 
 float GetSpeed()
 {
@@ -87,6 +98,16 @@ float GetDistance()
   delay(10);
   
   return speed / 4.2;
+}
+
+String PercentageToText(short percentage)
+{
+  if(percentage < 10)
+  {
+    return String(percentage) + "  ";
+  }
+
+  return String(percentage) + " ";
 }
 
 bool ThrottlePressed()

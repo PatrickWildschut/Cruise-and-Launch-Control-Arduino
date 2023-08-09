@@ -77,7 +77,7 @@ class Read : public Mode
 
       // Display to I2C
       lcd.setCursor(0, 0);
-      lcd.print("Throttle:     " + percentageText(percentage));
+      lcd.print("Throttle:     " + PercentageToText(percentage));
       lcd.setCursor(17, 0);
       lcd.print("%");
 
@@ -101,7 +101,7 @@ class Read : public Mode
       lcd.print("Throttle    Speed");
 
       lcd.setCursor(4, 1);
-      lcd.print(percentageText(percentage));
+      lcd.print(PercentageToText(percentage));
 
       lcd.setCursor(7, 1);
       lcd.print("%");
@@ -118,28 +118,6 @@ class Read : public Mode
       lcd.setCursor(13, 3);
       lcd.print(String(BrakePressed() ? "+++++" : "     "));
 
-    }
-
-    String percentageText(short percentage)
-    {
-      if(percentage < 10)
-      {
-        return String(percentage) + "  ";
-      }
-
-      return String(percentage) + " ";
-    }
-
-    short GetThrottlePercentage()
-    {
-      float throttle = GetThrottle() - 0.6;
-      int percentage = throttle / 4.0 * 100.0;
-
-      if(percentage <= 0) return 0;
-
-      if(percentage >= 100) return 100;
-
-      return percentage;
     }
 
     void readUtilities()

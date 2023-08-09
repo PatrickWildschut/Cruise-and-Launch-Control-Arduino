@@ -14,21 +14,12 @@ class About : public Mode
       SetVoltage(idleVoltage); 
     
       ShowBanner("       About", false);
-      TM1638Banner("E. 00 .3");
+      TM1638Banner("E  00  3");
     }
     
     void Loop()
     {
-      switch(aboutIndex)
-      {
-        case 0:
-          AboutPage();
-        break;
-        case 1:
-          DACTest();
-        break;
-      }
-
+      AboutPage();
       delay(100);
     }
 
@@ -36,14 +27,8 @@ class About : public Mode
     {
       switch (button)
       {
-        case 2:
-          AboutBack();
-          break;
         case 8: case 16:
           Lock();
-          break;
-        case 64:
-          AboutNext();
           break;
       }
     }
@@ -62,18 +47,9 @@ class About : public Mode
       lcd.print("Copyright 2023");
 
       lcd.setCursor(3, 3);
-      lcd.print("Version: 0.9.2");
+      lcd.print("Version: 0.9.3");
 
       walkingLEDs();
-    }
-
-    void DACTest()
-    {
-      setRelays(true);
-
-      lcd.setCursor(0, 0);
-      lcd.print("Current volt: " + String(volt));
-      SetVoltage(volt);
     }
 
     void Lock()
@@ -87,21 +63,5 @@ class About : public Mode
       // lock car
       LoggedIn = false;
       
-    }
-  
-    void AboutBack()
-    {
-      lcd.clear();
-      aboutIndex -= 1;
-
-      if(aboutIndex < 0) aboutIndex = totalModes - 1;
-    }
-  
-    void AboutNext()
-    {
-      lcd.clear();
-      aboutIndex += 1;
-
-      if(aboutIndex > totalModes - 1) aboutIndex = 0;
     }
 };

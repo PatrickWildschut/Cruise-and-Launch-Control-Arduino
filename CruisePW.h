@@ -4,7 +4,7 @@ class Cruise : public Mode
 {
   private:
     const int minSpeed = 30;
-    const float baseVoltage50 = 1.14;
+    const float baseVoltage50 = 1.13;
 
     float currentVoltage = 0;
     float oldSetVoltage = 0;
@@ -254,9 +254,9 @@ class Cruise : public Mode
       if(speedDifference < 0)
       {
         // subtracting because power 2 with negative numbers will get positive :)
-        ots = throttleBasedOnDesiredSpeed() - pow(speedDifference, 2) * 0.01;
+        ots = throttleBasedOnDesiredSpeed() - pow(speedDifference, 2) * 0.02;
       } else{
-        ots = throttleBasedOnDesiredSpeed() + pow(speedDifference, 2) * 0.01;
+        ots = throttleBasedOnDesiredSpeed() + pow(speedDifference, 2) * 0.02;
       }
 
       // Optimal throttle position formula by me :)

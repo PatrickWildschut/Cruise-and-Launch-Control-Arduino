@@ -1,19 +1,15 @@
 #pragma once
 
+#include "MiscTripMaster.h"
+#include "MiscLaunchControl.h"
+#include "MiscRally.h"
+
 class Misc : public Mode
 {
   private:
     bool inMainMenu = true;
     byte cursorY = 1;
     byte currentSubMenu = 0;
-
-    // Launch control
-    bool isPressedBefore = false;
-    bool started = false;
-
-    // Trip master
-    float totalDistance = 0;
-    float currentDistance = 0;
 
   public:
     void Setup()
@@ -34,8 +30,6 @@ class Misc : public Mode
       {
         goToSubMenu();
       }
-
-      delay(100);
     }
 
     void MainMenu()
@@ -51,11 +45,13 @@ class Misc : public Mode
       lcd.print("- Trip Master");
 
       lcd.setCursor(0, 3);
-      lcd.print("- Other");
+      lcd.print("- Rally / Track");
 
       drawCursor();
 
       TM1638Banner("E.  ^v.3");
+
+      delay(100);
     }
 
     void goToSubMenu()
@@ -69,124 +65,8 @@ class Misc : public Mode
           TripMaster();
           break;
         case 3:
-          void();
-      }
-    }
-
-    void LaunchControl()
-    {
-      if(ClutchPressed() && !started)
-      {
-        // Clutch is pressed, rev until release, then go into 'started'
-        lcd.setCursor(1, 0);
-        lcd.print("Revving to 4k RPM");
-
-        lcd.setCursor(1, 1);
-        lcd.print("Release clutch to");
-
-        lcd.setCursor(7, 2);
-        lcd.print("LAUNCH");
-
-        flashLEDs();
-        setRelays(true);
-        SetVoltage(1.3);
-        isPressedBefore = true;  
-      } else
-      {
-        if(isPressedBefore)
-        {
-          // LAUNCH
-          LCDreset(0);
-          LCDreset(2);
-          setRelays(false);
-          SetVoltage(idleVoltage);
-
-          lcd.setCursor(0, 1);
-          lcd.print("    LAUNCHED!!!   ");
-
-          setLEDs(true);
-          started = true;
-        } else
-        {
-          // BEFORE CLUTCH DEPRESSED
-
-          lcd.setCursor(3, 0);
-          lcd.print("Depress clutch");
-
-          lcd.setCursor(6, 1);
-          lcd.print("to start");
-
-          setRelays(false);
-          walkingLEDs();
-        }
-      }
-
-      TM1638Banner("E.     3");
-    }
-
-    void TripMaster()
-    {
-      float distance = GetDistance();
-      currentDistance += distance;
-      totalDistance += distance;
-
-      LCDTripMaster();
-
-      TM1638Banner("E.    .3");
-    }
-
-    void LCDTripMaster()
-    {
-      lcd.setCursor(4, 0);
-      lcd.print("Trip Master");
-
-      lcd.setCursor(6, 1);
-      lcd.print("Distance");
-
-      lcd.setCursor(2, 2);
-      lcd.print("Current    Total");
-
-      TripMasterCurrent();
-      TripMasterTotal();
-
-    }
-
-    void TripMasterCurrent()
-    {
-      lcd.setCursor(3, 3);
-
-      if(currentDistance < 1000)
-      {
-        lcd.print(String(int(currentDistance)));
-
-        lcd.setCursor(7, 3);
-        lcd.print("m  ");
-      } else
-      {
-        lcd.print(String(currentDistance / 1000.0));
-
-        lcd.setCursor(8, 3);
-        lcd.print("km");
-      }
-      
-    }
-
-    void TripMasterTotal()
-    {
-      lcd.setCursor(14, 3);
-
-      if(totalDistance < 1000)
-      {
-        lcd.print(String(int(totalDistance)));
-
-        lcd.setCursor(18, 3);
-        lcd.print("m ");
-      } else
-      {
-        lcd.print(String(totalDistance / 1000.0));
-
-        lcd.setCursor(19, 3);
-        lcd.print("km");
+          Rally();
+          break;
       }
     }
 
@@ -268,12 +148,11 @@ class Misc : public Mode
       {
         // Launch control
         case 1:
-          started = false;
-          isPressedBefore = false;
+          LaunchControlChoose();
           break;
         // Trip master
         case 2:
-          currentDistance = 0;
+          TripMasterChoose();
           break;
       }
     }

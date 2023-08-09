@@ -77,7 +77,7 @@ class Settings : public Mode
       lcd.print("Cruise: " + String(CruiseModeLayout == 0 ? "Horizontal" : "Vertical  "));
 
       lcd.setCursor(0, 3);
-      lcd.print("Misc. : " + String(MiscModeLayout == 0 ? "Horizontal" : "Vertical  "));
+      lcd.print("Rally : " + String(MiscModeLayout == 0 ? "Horizontal" : "Vertical  "));
 
       drawCursor();
     }
