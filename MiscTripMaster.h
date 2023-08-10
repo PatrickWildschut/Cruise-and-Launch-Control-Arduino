@@ -75,5 +75,5 @@ void TripMaster()
 
   TM1638Banner("E.    .3");
 
-  delay(100);
+  delay(50);
 }

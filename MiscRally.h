@@ -14,22 +14,13 @@ add a button for lap times, reset timer and save old timer and distance driven.
 
 bool ready = false;
 bool rStarted = false;
+bool rFinished = false;
 
 unsigned long startTime = 0;
 unsigned long timeElapsed = 0;
+String endTime = "";
 
 float rallyDistance = 0;
-
-// Button 7 press
-void RallyChoose()
-{
-  // end rally
-  // reset
-
-  // TEST
-  rallyDistance = 0;
-  startTime = millis();
-}
 
 String getMinutes()
 {
@@ -74,6 +65,56 @@ String Timer()
   return getMinutes() + ":" + getSeconds() + ":" + timeStr.substring(timeStr.length() - 3);
 }
 
+int averageSpeed()
+{
+  return rallyDistance * (timeElapsed / 1000);
+}
+
+void rallyFinished()
+{
+  if(endTime == "")
+  {
+    endTime = Timer();
+  }
+
+  lcd.setCursor(6, 0);
+  lcd.print("Finished!");
+
+  lcd.setCursor(0, 1);
+  lcd.print("Avg. Speed    Time");
+
+  lcd.setCursor(11, 2);
+  lcd.print(endTime);
+
+  lcd.setCursor(4, 2);
+  lcd.print(averageSpeed());
+
+  lcd.setCursor(4, 3);
+  lcd.print("Distance:  " + String(int(rallyDistance)));
+}
+
+// Button 7 press
+void RallyChoose()
+{
+  // end rally
+  if(rStarted)
+  {
+    rStarted = false;
+    rFinished = true;
+    return;
+  }
+
+  // button pressed while finished, reset
+  if(rFinished)
+  {
+    rFinished = false;
+    rallyDistance = 0;
+    endTime = "";
+    return;
+  }
+  
+}
+
 void rallyStarted()
 {
   // time elapsed TL
@@ -111,7 +152,7 @@ void rallyStarted()
 void rallyReady()
 {
   lcd.setCursor(3, 1);
-  lcd.print("Drive to start.");
+  lcd.print("Drive to start");
 
   lcd.setCursor(5, 3);
   lcd.print("  Ready.  ");
@@ -128,6 +169,11 @@ void rallyNotReady()
 
 void rallyIdle()
 {
+  if(rFinished)
+  {
+    rallyFinished();
+    return;
+  }
 
   lcd.setCursor(1, 0);
   lcd.print("Rally / Track Mode");
@@ -167,5 +213,5 @@ void Rally()
 
   TM1638Banner("E.    .3");
 
-  delay(30);
+  delay(10);
 }

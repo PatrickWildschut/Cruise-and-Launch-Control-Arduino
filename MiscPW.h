@@ -154,6 +154,10 @@ class Misc : public Mode
         case 2:
           TripMasterChoose();
           break;
+
+        case 3:
+          RallyChoose();
+          break;
       }
     }
 

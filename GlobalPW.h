@@ -8,18 +8,18 @@ bool LoggedIn = false;
 
 Mode* Modes[6];
 short CurrentMode = 5; // default to login mode, mode 5 because counting from 0, aka login mode = 6
-short TotalModes = 4; // login mode doesnt count as a mode.
+byte TotalModes = 4; // login mode doesnt count as a mode.
 
-float idleVoltage = 0.6;
+const float idleVoltage = 0.6;
 
 // Connected pins
-const int ThrottleIn = A0;
-const int ClutchIn = A1;
-const int BrakeIn = A2;
-const int SpeedIn = 12;
+const byte ThrottleIn = A0;
+const byte ClutchIn = A1;
+const byte BrakeIn = A2;
+const byte SpeedIn = 12;
 
-const uint8_t Relay1 = 8;
-const uint8_t Relay2 = 9;
+const byte Relay1 = 8;
+const byte Relay2 = 9;
 
 // Layouts
 byte ReadModeLayout = 0;
@@ -79,7 +79,7 @@ float GetAcceleration()
   unsigned long deltaTime = millis();
   float deltaSpeed = GetSpeed() / 3.6;
 
-  delay(30);
+  delay(50);
 
   deltaTime = millis() - deltaTime;
   deltaSpeed = GetSpeed() / 3.6 - deltaSpeed;

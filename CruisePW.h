@@ -3,7 +3,7 @@
 class Cruise : public Mode
 {
   private:
-    const int minSpeed = 30;
+    const byte minSpeed = 30;
     const float baseVoltage50 = 1.13;
 
     float currentVoltage = 0;
@@ -11,7 +11,7 @@ class Cruise : public Mode
     short averageSpeedSize = 10;
     float averageSpeed[10];
     float currentSpeed = 0;
-    int desiredSpeed = -1;
+    short desiredSpeed = -1;
     bool enabled = false;
     bool increaseDesiredSpeed = false;
     byte speedChangeFeedbackIndex = 0;

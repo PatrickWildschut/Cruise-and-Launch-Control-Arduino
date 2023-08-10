@@ -27,7 +27,7 @@ class Settings : public Mode
         goToSubMenu();
       }
 
-      delay(100);
+      delay(50);
     }
 
     void MainMenu()

@@ -34,7 +34,7 @@ class Read : public Mode
 
       LEDsBasedOnPercentage(GetThrottlePercentage());
 
-      delay(20);
+      delay(10);
     }
 
     void ButtonReceiver(short button)

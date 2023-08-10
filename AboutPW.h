@@ -5,7 +5,6 @@ class About : public Mode
   private:
     byte aboutIndex = 0;
     byte totalModes = 2;
-    float volt = 1;
   
   public:
     void Setup()
@@ -47,14 +46,14 @@ class About : public Mode
       lcd.print("Copyright 2023");
 
       lcd.setCursor(3, 3);
-      lcd.print("Version: 0.9.3");
+      lcd.print("Version: 0.9.4");
 
       walkingLEDs();
     }
 
     void Lock()
     {
-      CurrentMode = 4;
+      CurrentMode = 5;
       TM1638.reset();
       lcd.clear();
 
