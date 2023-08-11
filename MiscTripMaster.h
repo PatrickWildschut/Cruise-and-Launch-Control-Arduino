@@ -24,7 +24,7 @@ void TripMasterCurrent()
   {
     lcd.print(String(currentDistance / 1000.0));
 
-    lcd.setCursor(8, 3);
+    lcd.setCursor(7, 3);
     lcd.print("km");
   }
   
@@ -32,7 +32,7 @@ void TripMasterCurrent()
 
 void TripMasterTotal()
 {
-  lcd.setCursor(14, 3);
+  lcd.setCursor(13, 3);
 
   if(totalDistance < 1000)
   {
@@ -44,7 +44,7 @@ void TripMasterTotal()
   {
     lcd.print(String(totalDistance / 1000.0));
 
-    lcd.setCursor(19, 3);
+    lcd.setCursor(18, 3);
     lcd.print("km");
   }
 }

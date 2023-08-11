@@ -55,7 +55,7 @@ String Timer()
     return " 0:00:" + String(timeElapsed);
   
   if(timeElapsed < 9999)
-    return " 0:" + String(timeStr.charAt(0)) + ":"
+    return " 0:0" + String(timeStr.charAt(0)) + ":"
         + timeStr.substring(1);
   
   if(timeElapsed < 59999)
@@ -67,7 +67,7 @@ String Timer()
 
 int averageSpeed()
 {
-  return rallyDistance * (timeElapsed / 1000);
+  return (rallyDistance / (timeElapsed / 1000)) * 3.6;
 }
 
 void rallyFinished()
@@ -81,7 +81,7 @@ void rallyFinished()
   lcd.print("Finished!");
 
   lcd.setCursor(0, 1);
-  lcd.print("Avg. Speed    Time");
+  lcd.print("Avg. Speed   Time");
 
   lcd.setCursor(11, 2);
   lcd.print(endTime);
@@ -89,7 +89,7 @@ void rallyFinished()
   lcd.setCursor(4, 2);
   lcd.print(averageSpeed());
 
-  lcd.setCursor(4, 3);
+  lcd.setCursor(2, 3);
   lcd.print("Distance:  " + String(int(rallyDistance)));
 }
 
@@ -110,6 +110,7 @@ void RallyChoose()
     rFinished = false;
     rallyDistance = 0;
     endTime = "";
+    ready = false;
     return;
   }
   
@@ -140,12 +141,12 @@ void rallyStarted()
   lcd.print(PercentageToText(percentage));
 
   // distance driven BR
-  lcd.setCursor(11, 2);
+  lcd.setCursor(10, 2);
   lcd.print("Distance");
 
   rallyDistance += GetDistance();
 
-  lcd.setCursor(14, 3);
+  lcd.setCursor(13, 3);
   lcd.print(String(int(rallyDistance)));
 }
 
@@ -192,11 +193,13 @@ void rallyIdle()
   }
 
   // we are ready, wait until the speed is not 0 anymore. 
-  if(GetSpeed() != 0)
+  if(GetSpeed() > 9)
   {
     // start rally
     rStarted = true;
     startTime = millis();
+
+    lcd.clear();
   }
 }
 

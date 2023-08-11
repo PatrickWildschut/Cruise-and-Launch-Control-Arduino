@@ -4,7 +4,7 @@ class Cruise : public Mode
 {
   private:
     const byte minSpeed = 30;
-    const float baseVoltage50 = 1.13;
+    const float baseVoltage50 = 1.12;
 
     float currentVoltage = 0;
     float oldSetVoltage = 0;
@@ -289,7 +289,7 @@ class Cruise : public Mode
       lcd.print("Speed");
 
       lcd.setCursor(0, 2);
-      lcd.print(" Current   Desired");
+      lcd.print(" Current   Desired  ");
 
       lcd.setCursor(2, 3);
       lcd.print(String(currentSpeed));

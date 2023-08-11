@@ -10,7 +10,7 @@ Mode* Modes[6];
 short CurrentMode = 5; // default to login mode, mode 5 because counting from 0, aka login mode = 6
 byte TotalModes = 4; // login mode doesnt count as a mode.
 
-const float idleVoltage = 0.6;
+const float idleVoltage = 0.5;
 
 // Connected pins
 const byte ThrottleIn = A0;
@@ -97,7 +97,7 @@ float GetDistance()
   float speed = GetSpeed() / 3.6;
   delay(10);
   
-  return speed / 4.2;
+  return speed / 5.7;
 }
 
 String PercentageToText(short percentage)
