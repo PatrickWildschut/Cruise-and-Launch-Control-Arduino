@@ -2,13 +2,7 @@
 
 Todo:
 
-miscellaneous mode:
-this mode has will have: launch control, the return of trip master and <test mode>/<game>?
-
-Settings:
-Layouts -> Horizontal (old), vertical (new)
-
-All settings will be saved to the arduino EEPROM
+Added second and third setting in settings
 
 */
 

@@ -97,7 +97,7 @@ float GetDistance()
   float speed = GetSpeed() / 3.6;
   delay(10);
   
-  return speed / 5.7;
+  return speed / 5.8;
 }
 
 String PercentageToText(short percentage)
