@@ -23,98 +23,103 @@ Added second and third setting in settings
 #include "SettingsPW.h"
 #include "AboutPW.h"
 
+/* Setup:
+
+   - LCD
+   - DAC
+   - Set all inputs and outputs
+   - Initialize classes
+   - Load layouts
+*/
 void setup() {
-  // put your setup code here, to run once:
-  lcd.init(); 
-  lcd.backlight();
-  MCP4725.begin(0x60);
-  //TWBR = 12;
+    lcd.init();
+    lcd.backlight();
+    MCP4725.begin(0x60);
 
-  pinMode(ThrottleIn, INPUT);
-  pinMode(SpeedIn, INPUT);
-  pinMode(Relay1, OUTPUT);
-  pinMode(Relay2, OUTPUT);
+    pinMode(ThrottleIn, INPUT);
+    pinMode(SpeedIn, INPUT);
+    pinMode(Relay1, OUTPUT);
+    pinMode(Relay2, OUTPUT);
 
-  Modes[0] = static_cast<Mode *>(new Read());
-  Modes[1] = static_cast<Mode *>(new Cruise());
-  Modes[2] = static_cast<Mode *>(new Misc());
-  Modes[3] = static_cast<Mode *>(new Settings());
-  Modes[4] = static_cast<Mode *>(new About());
-  Modes[5] = static_cast<Mode *>(new Login());
+    Modes[0] = static_cast<Mode *>(new Read());
+    Modes[1] = static_cast<Mode *>(new Cruise());
+    Modes[2] = static_cast<Mode *>(new Misc());
+    Modes[3] = static_cast<Mode *>(new Settings());
+    Modes[4] = static_cast<Mode *>(new About());
+    Modes[5] = static_cast<Mode *>(new Login());
 
-  LoadLayouts();
+    LoadLayouts();
 
-  //Modes[CurrentMode]->Setup();
-  setupMode(CurrentMode);
+    setupMode();
 }
 
-void setupMode(int index)
-{
-  lcd.clear();
-  TM1638.reset();
+/* Setup the current selected mode, check if logged in
 
-  if(CurrentMode < 0) CurrentMode = TotalModes;
-  if(CurrentMode > TotalModes) CurrentMode = 0;
+*/
+void setupMode() {
+    lcd.clear();
+    TM1638.reset();
 
-  if(LoggedIn)
-  {
-    Modes[CurrentMode]->Setup();
-  } else{
-    Modes[5]->Setup();
-  }
+    if (CurrentMode < 0) CurrentMode = TotalModes;
+    if (CurrentMode > TotalModes) CurrentMode = 0;
+
+    if (LoggedIn) {
+        Modes[CurrentMode]->Setup();
+    } else {
+        Modes[5]->Setup();
+    }
 }
 
 void loop() {
-  handleButtons();
+    handleButtons();
 
-  if(LoggedIn)
-    Modes[CurrentMode]->Loop();
-  else
-    Modes[5]->Loop();   
-  
+    if (LoggedIn)
+        Modes[CurrentMode]->Loop();
+    else
+        Modes[5]->Loop();
+
 } // every Loop function within Mode must contain a delay()
 
-void handleButtons()
-{
-  byte buttons = TM1638.readButtons();
+void handleButtons() {
+    byte buttons = TM1638.readButtons();
 
-  if(buttons == 0) 
-  {
-    ButtonClicked = false;
+    if (buttons == 0) {
+        ButtonClicked = false;
 
-    return;
-  }
-
-  // on click check
-  // check if it wasn't already pressed
-  if(TM1638OnClick())
-  {
-    // logged in check
-    if(!LoggedIn)
-    {
-      Modes[5]->ButtonReceiver(buttons);
-      return;
+        return;
     }
 
-    switch(buttons)
-    {
-      // Previous mode 1
-      case 1:
+    // on click check
+    if (!TM1638OnClick()) {
+        // a button has already been pressed
+        return;
+    }
+
+    // logged in check
+    if (!LoggedIn) {
+        Modes[5]->ButtonReceiver(buttons);
+        return;
+    }
+
+    // process buttons
+
+    switch (buttons) {
+    // Previous mode 1
+    case 1:
         CurrentMode -= 1;
-        setupMode(CurrentMode);
-        break;
-      
-      // Next mode button 8
-      case 128:
-        CurrentMode += 1;
-        setupMode(CurrentMode);
+        setupMode();
         break;
 
-      // all mode dependend buttons
-      default:
+    // Next mode button 8
+    case 128:
+        CurrentMode += 1;
+        setupMode();
+        break;
+
+    // all mode dependend buttons
+    default:
         Modes[CurrentMode]->ButtonReceiver(buttons);
         break;
     }
-  }
 }
 
