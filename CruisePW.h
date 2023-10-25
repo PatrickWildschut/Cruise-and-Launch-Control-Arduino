@@ -6,9 +6,8 @@ private:
     const float baseVoltage50 = 1.10;
 
     float currentVoltage = 0;
-    float oldSetVoltage = 0;
+    float oldSetThrottleByVoltage = 0;
     short averageSpeedSize = 10;
-    float averageSpeed[10];
     float currentSpeed = 0;
     short desiredSpeed = -1;
     bool enabled = false;
@@ -19,7 +18,7 @@ public:
     void Setup() {
 
         setRelays(false);
-        SetVoltage(idleVoltage);
+        SetThrottleByVoltage(idleVoltage);
 
         enabled = false;
         reset();
@@ -145,10 +144,10 @@ public:
         currentVoltage = calculateOptimalThrottlePosition();
 
         // only update DAC if there is a difference to avoid EAC fail
-        if (currentVoltage == oldSetVoltage) {
-            SetVoltage(currentVoltage);
+        if (currentVoltage != oldSetThrottleByVoltage) {
+            SetThrottleByVoltage(currentVoltage);
 
-            oldSetVoltage = currentVoltage;
+            oldSetThrottleByVoltage = currentVoltage;
         }
     }
 
@@ -186,7 +185,7 @@ public:
         lcd.clear();
         setRelays(false);
         currentVoltage = idleVoltage;
-        SetVoltage(idleVoltage);
+        SetThrottleByVoltage(idleVoltage);
     }
 
     bool CBPressed() {
@@ -273,20 +272,4 @@ public:
             reset();
         }
     }
-
-    // void updateCurrentSpeed() {
-    //     // move all 1 to i - 1
-    //     for (int i = averageSpeedSize - 1; i > 0; i--) {
-    //         averageSpeed[i - 1] = averageSpeed[i];
-    //     }
-    //     averageSpeed[averageSpeedSize - 1] = GetSpeed();
-
-    //     // count total
-    //     float speed = 0;
-    //     for (int i = 0; i < averageSpeedSize; i++) {
-    //         speed += averageSpeed[i];
-    //     }
-
-    //     currentSpeed = speed / float(averageSpeedSize);
-    // }
 };

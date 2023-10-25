@@ -3,13 +3,13 @@
 class Login : public Mode {
 private:
     bool failed = false;
-    short* pass[3];
-    short count = 0;
+    byte pass[3];
+    byte count = 0;
 
 public:
     void Setup() {
         lcd.clear();
-        SetVoltage(idleVoltage);
+        SetThrottleByVoltage(idleVoltage);
         setRelays(true);
 
         setBanner("  Login to use car");
@@ -36,7 +36,7 @@ public:
 
             reset();
             setRelays(false);
-            SetVoltage(idleVoltage);
+            SetThrottleByVoltage(idleVoltage);
 
             loggedInDemo();
 
@@ -103,7 +103,7 @@ public:
 
     void lockCar() {
         // disable throttle, 0 volt should cause an error on the instrument cluster
-        SetVoltage(0);
+        SetThrottleByVoltage(0);
 
         lcd.setCursor(0, 0);
         lcd.print("--------------------");

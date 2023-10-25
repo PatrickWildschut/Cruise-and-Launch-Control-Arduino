@@ -1,3 +1,5 @@
+#pragma once
+
 // Trip master functions from within Misc
 
 float totalDistance = 0;

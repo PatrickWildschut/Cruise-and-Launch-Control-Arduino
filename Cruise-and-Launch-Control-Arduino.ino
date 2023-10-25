@@ -23,6 +23,10 @@ Added second and third setting in settings
 #include "SettingsPW.h"
 #include "AboutPW.h"
 
+#include "MiscLaunchControl.h"
+#include "MiscRevTest.h"
+#include "MiscRally.h"
+
 /* Setup:
 
    - LCD
@@ -47,6 +51,10 @@ void setup() {
     Modes[3] = static_cast<Mode *>(new Settings());
     Modes[4] = static_cast<Mode *>(new About());
     Modes[5] = static_cast<Mode *>(new Login());
+
+    MiscSubModes[0] = static_cast<Mode *>(new LaunchControl());
+    MiscSubModes[1] = static_cast<Mode *>(new RevTest());
+    MiscSubModes[2] = static_cast<Mode *>(new Rally());
 
     LoadLayouts();
 

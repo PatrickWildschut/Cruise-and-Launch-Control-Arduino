@@ -9,7 +9,7 @@ private:
 public:
     void Setup() {
         setRelays(false);
-        SetVoltage(idleVoltage);
+        SetThrottleByVoltage(idleVoltage);
 
         readIndex = 0;
 

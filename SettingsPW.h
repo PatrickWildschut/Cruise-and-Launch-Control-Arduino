@@ -9,7 +9,7 @@ private:
 public:
     void Setup() {
         setRelays(false);
-        SetVoltage(idleVoltage);
+        SetThrottleByVoltage(idleVoltage);
 
         ShowBanner("      Settings", false);
 
@@ -173,10 +173,13 @@ public:
             switch (cursorY) {
             case 1:
                 EEPROM.write(0, ReadModeLayout);
+                break;
             case 2:
                 EEPROM.write(1, CruiseModeLayout);
+                break;
             case 3:
                 EEPROM.write(2, MiscModeLayout);
+                break;
             }
         }
     }

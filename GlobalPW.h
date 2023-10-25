@@ -2,13 +2,17 @@
 
 // This file only exists for variables/functions that will be used across other files.
 
-// 0: Read. 1: Cruise control, 2: Launch control 3: Settings 4: About 5: Login
+// 0: Read. 1: Cruise control, 2: Misc 3: Settings 4: About 5: Login
+
+const char *currentVersion = "Version: 0.9.7";
 
 bool LoggedIn = false;
 
 Mode* Modes[6];
 short CurrentMode = 5; // default to login mode, mode 5 because counting from 0, aka login mode = 6
 const byte TotalModes = 4; // login mode doesnt count as a mode.
+
+Mode* MiscSubModes[3];
 
 const float idleVoltage = 0.5;
 
@@ -49,7 +53,7 @@ float GetThrottle() {
 }
 short GetThrottlePercentage() {
     float throttle = GetThrottle() - 0.6;
-    int percentage = throttle * 0.04; // formula: throttle * 4 / 100
+    int percentage = throttle / 4.0 * 100.0;
 
     if (percentage <= 0) return 0;
 
