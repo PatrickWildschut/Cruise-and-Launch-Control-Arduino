@@ -49,10 +49,13 @@ public:
         switch (currentSubMenu) {
         case 1:
             Layouts();
+            break;
         case 2:
             void();
+            break;
         case 3:
             void();
+            break;
         }
     }
 

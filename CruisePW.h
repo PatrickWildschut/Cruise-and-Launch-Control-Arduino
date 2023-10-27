@@ -3,14 +3,20 @@
 class Cruise : public Mode {
 private:
     const byte minSpeed = 30;
-    const float baseVoltage50 = 1.10;
+    const float baseVoltage = 1.10;
+    const byte maxSpeedDifference = 10; // Tenth of maximum difference between desired speed and current speed before changing voltage. 10 = 1
+    const float voltageIntervene = 0.01;
+
+    bool enabled = false;
 
     float currentVoltage = 0;
     float oldSetThrottleByVoltage = 0;
-    short averageSpeedSize = 10;
+
     float currentSpeed = 0;
+    float oldSpeed;
     short desiredSpeed = -1;
-    bool enabled = false;
+    bool update;
+
     bool increaseDesiredSpeed = false;
     byte speedChangeFeedbackIndex = 0;
 
@@ -29,7 +35,7 @@ public:
     void Loop() {
         lcd.setCursor(1, 0);
 
-        //updateCurrentSpeed();
+        // update current speed
         currentSpeed = GetSpeed();
 
         if (!enabled) {
@@ -41,6 +47,7 @@ public:
             }
 
             TM1638Banner("Eno  <>3");
+
             setRelays(false);
             setLEDs(false);
             return;
@@ -51,13 +58,12 @@ public:
         // choose layout
         CruiseModeLayout == 0 ? Horizontal() : Vertical();
 
-        TM1638Banner("E0  <>>3");
         walkingLEDs();
-
-        controlSpeed();
-        checkDesiredSpeedChanged();
-
+        updateTM1638();
         checkPedalsPressed();
+
+        update ? controlSpeed() : void();
+        update = !update;
 
         delay(100);
     }
@@ -83,10 +89,10 @@ public:
             // not enabled, buttons:
             switch (button) {
             case 2:
-                OnNewSpeed();
+                EnableCruise(true);
                 break;
             case 4:
-                OnOldSpeed();
+                EnableCruise(false);
                 break;
             case 32:
                 ChangeDesiredSpeed(-5, true);
@@ -99,26 +105,13 @@ public:
 
     }
 
-    void OnNewSpeed() {
-        // SWITCH ON
-        // GET NEW SPEED BASED ON CURRENT SPEED
-        if (!enabled) {
-            enabled = true;
+    void EnableCruise(bool newSpeed) {
+        enabled = true;
+        currentVoltage = GetThrottle();
 
+        // keep old speed if that speed isn't below the minSpeed
+        if (desiredSpeed <= minSpeed || newSpeed)
             setCurrentSpeed();
-        }
-    }
-
-    void OnOldSpeed() {
-        // KEEP OLD DESIRED SPEED, UNLESS DESIRED SPEED IS TOO LOW
-        if (!enabled) {
-            enabled = true;
-
-            if (desiredSpeed <= minSpeed)
-                setCurrentSpeed();
-
-            return;
-        }
     }
 
     void ChangeDesiredSpeed(int amount, bool snap) {
@@ -141,7 +134,7 @@ public:
     }
 
     void controlSpeed() {
-        currentVoltage = calculateOptimalThrottlePosition();
+        setNewVoltage(); // sets currentVoltage
 
         // only update DAC if there is a difference to avoid EAC fail
         if (currentVoltage != oldSetThrottleByVoltage) {
@@ -149,12 +142,16 @@ public:
 
             oldSetThrottleByVoltage = currentVoltage;
         }
+
+        oldSpeed = currentSpeed;
     }
 
-    void checkDesiredSpeedChanged() {
+    void updateTM1638() {
         // if speed changed, show arrow on TM1638 and feedback on LCD for `speedChangeFeedbackIndex` amount of time
         if (speedChangeFeedbackIndex > 0) {
             speedChangeFeedback();
+        } else {
+            TM1638Banner("E0  <>>3");
         }
     }
 
@@ -183,6 +180,7 @@ public:
 
     void reset() {
         lcd.clear();
+        update = false;
         setRelays(false);
         currentVoltage = idleVoltage;
         SetThrottleByVoltage(idleVoltage);
@@ -197,46 +195,42 @@ public:
         speedChangeFeedbackIndex -= 1;
     }
 
-    float throttleBasedOnDesiredSpeed() {
-        // these static values are based on testing results
-
-        int difference = desiredSpeed - 50;
-
-        return baseVoltage50 + (difference * 0.01);
-    }
-
-    float throttleBasedOnCurrentSpeed() {
-        // these static values are based on testing results
-
-        float difference = currentSpeed - 50.0;
-
-        return baseVoltage50 + (difference * 0.01);
-    }
-
-    float calculateOptimalThrottlePosition() {
-        float ots = 0;
+    void setNewVoltage() {
 
         // Compare speeds
-        float speedDifference = desiredSpeed - currentSpeed;
+        float desiredDifference = desiredSpeed - currentSpeed;
+        float deltaSpeed = oldSpeed - currentSpeed;
 
-        if (speedDifference < 0) {
-            // subtracting because power 2 with negative numbers will get positive :)
-            ots = throttleBasedOnDesiredSpeed() - pow(speedDifference, 2) * 0.01;
+        bool tooSlow = desiredDifference < -maxSpeedDifference * 0.1;
+        bool tooFast = desiredDifference > maxSpeedDifference * 0.1;
+
+        if (tooSlow) {
+            if (deltaSpeed <= -desiredDifference * 0.1) {
+                currentVoltage += desiredDifference * voltageIntervene;
+            } else {
+                currentVoltage -= desiredDifference * voltageIntervene;
+            }
+        } else if (tooFast) {
+            if (deltaSpeed >= -desiredDifference * 0.1) {
+                currentVoltage += desiredDifference * voltageIntervene;
+            } else {
+                currentVoltage -= desiredDifference * voltageIntervene;
+            }
         } else {
-            ots = throttleBasedOnDesiredSpeed() + pow(speedDifference, 2) * 0.01;
+            if (deltaSpeed < -0.1 || deltaSpeed > 0.1) {
+                currentVoltage += desiredDifference * voltageIntervene;
+            }
         }
 
-        // Optimal throttle position formula by me :)
-        float tCS = throttleBasedOnCurrentSpeed();
-
-        // lock to max and min voltage
-        if (ots > tCS + 0.5) {
-            ots = tCS + 0.5;
-        } else if (ots < idleVoltage) {
-            ots = idleVoltage;
+        if (currentVoltage > 2) {
+            currentVoltage = 2;
+        } else if (currentVoltage < 0.5) {
+            currentVoltage = 0.5;
         }
 
-        return ots;
+        // desiredDifference < 0 && deltaSpeed > 0 => Aan het klimmen naar desired
+
+        // desiredDifference > 0 && deltaSpeed < 0 => Aan het dalen naar desired
     }
 
     void Horizontal() {
@@ -252,13 +246,13 @@ public:
         lcd.print("Speed");
 
         lcd.setCursor(0, 2);
-        lcd.print(" Current   Desired  ");
+        lcd.print(" Volt     Delta V  ");
 
         lcd.setCursor(2, 3);
-        lcd.print(String(currentSpeed));
+        lcd.print(String(currentVoltage));
 
         lcd.setCursor(13, 3);
-        lcd.print(String(desiredSpeed));
+        lcd.print(String(oldSpeed - currentSpeed));
     }
 
     void setCurrentSpeed() {

@@ -25,7 +25,8 @@ Added second and third setting in settings
 
 #include "MiscLaunchControl.h"
 #include "MiscRevTest.h"
-#include "MiscRally.h"
+#include "MiscTripMaster.h"
+//#include "MiscRally.h"
 
 /* Setup:
 
@@ -54,7 +55,7 @@ void setup() {
 
     MiscSubModes[0] = static_cast<Mode *>(new LaunchControl());
     MiscSubModes[1] = static_cast<Mode *>(new RevTest());
-    MiscSubModes[2] = static_cast<Mode *>(new Rally());
+    MiscSubModes[2] = static_cast<Mode *>(new TripMaster());
 
     LoadLayouts();
 

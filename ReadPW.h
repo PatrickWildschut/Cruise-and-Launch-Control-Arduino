@@ -110,15 +110,15 @@ public:
     }
 
     void readUtilities() {
-        lcd.setCursor(0, 0);
-        lcd.print("G Force: " + String(GetGForce()));
-        lcd.setCursor(16, 0);
-        lcd.print("G");
+        // lcd.setCursor(0, 0);
+        // lcd.print("G Force: " + String(GetGForce()));
+        // lcd.setCursor(16, 0);
+        // lcd.print("G");
 
-        lcd.setCursor(0, 1);
-        lcd.print("a:       " + String(GetAcceleration()));
-        lcd.setCursor(15, 1);
-        lcd.print("m/s2");
+        // lcd.setCursor(0, 1);
+        // lcd.print("a:       " + String(GetAcceleration()));
+        // lcd.setCursor(15, 1);
+        // lcd.print("m/s2");
 
         lcd.setCursor(0, 3);
         lcd.print("Throttle:    " + String(GetThrottle()));

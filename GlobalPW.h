@@ -4,12 +4,12 @@
 
 // 0: Read. 1: Cruise control, 2: Misc 3: Settings 4: About 5: Login
 
-const char *currentVersion = "Version: 0.9.7";
+const char *currentVersion = "Version: 0.9.8";
 
-bool LoggedIn = false;
+bool LoggedIn = true;
 
 Mode* Modes[6];
-short CurrentMode = 5; // default to login mode, mode 5 because counting from 0, aka login mode = 6
+short CurrentMode = 0; // default to login mode, mode 5 because counting from 0, aka login mode = 6
 const byte TotalModes = 4; // login mode doesnt count as a mode.
 
 Mode* MiscSubModes[3];
@@ -49,11 +49,11 @@ void setRelays(bool set) {
 }
 
 float GetThrottle() {
-    return analogRead(ThrottleIn) * 5.0 / 1023.0;
+    return analogRead(ThrottleIn) * 0.0049; // formula: throttle * 5.0 / 1023.0
 }
 short GetThrottlePercentage() {
     float throttle = GetThrottle() - 0.6;
-    int percentage = throttle / 4.0 * 100.0;
+    int percentage = throttle * 25.0; // formula: throttle / 4.0 * 100.0
 
     if (percentage <= 0) return 0;
 
@@ -64,29 +64,13 @@ short GetThrottlePercentage() {
 
 float GetSpeed() {
     // wait for max      ->                  0.125 sec -> otherwise it will return 0
-    float duration = pulseIn(SpeedIn, HIGH, 125000)  / 10000.0;
+    float duration = pulseIn(SpeedIn, HIGH, 125000) / 10000.0;
 
     // waited too long, but don't divide by 0
     if (duration == 0) return 0;
 
     // self made formula :)
     return (1 / duration) * 38;
-}
-
-float GetAcceleration() {
-    unsigned long deltaTime = millis();
-    float deltaSpeed = GetSpeed() / 3.6;
-
-    delay(50);
-
-    deltaTime = millis() - deltaTime;
-    deltaSpeed = GetSpeed() / 3.6 - deltaSpeed;
-
-    return deltaSpeed / (deltaTime / 1000.0);
-}
-
-float GetGForce() {
-    return GetAcceleration() / 9.81;
 }
 
 float GetDistance() {
@@ -109,7 +93,7 @@ bool ThrottlePressed() {
 }
 
 bool ThrottlePressed(float minVolt) {
-    return analogRead(ThrottleIn) * 5.0 / 1023.0 > minVolt;
+    return analogRead(ThrottleIn) * 0.0049 > minVolt;
 }
 
 bool ClutchPressed() {

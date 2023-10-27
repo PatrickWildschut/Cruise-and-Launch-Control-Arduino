@@ -36,7 +36,7 @@ public:
         lcd.print("- Rev Test");
 
         lcd.setCursor(0, 3);
-        lcd.print("- Rally / Track");
+        lcd.print("- Trip Master");
 
         drawCursor();
 
