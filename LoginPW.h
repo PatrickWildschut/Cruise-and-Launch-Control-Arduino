@@ -40,6 +40,9 @@ public:
 
             loggedInDemo();
 
+            // comment this to skip checking connectivity.
+            checkConnections();
+
             CurrentMode = 0;
             Modes[CurrentMode]->Setup();
             return;
@@ -102,7 +105,7 @@ public:
     }
 
     void lockCar() {
-        // disable throttle, 0 volt should cause an error on the instrument cluster
+        // disable throttle
         SetThrottleByVoltage(0);
 
         lcd.setCursor(0, 0);
@@ -135,6 +138,38 @@ public:
         }
 
         count = 0;
+    }
+
+    void checkConnections() {
+        bool failed;
+        lcd.clear();
+
+        do {
+            failed = false;
+            lcd.setCursor(1, 0);
+            lcd.print("Throttle check...");
+            lcd.setCursor(0, 1);
+
+            if (GetThrottle() < 0.2) {
+                lcd.print("[-] ERROR");
+                failed = true;
+            } else {
+                lcd.print("[+] Connected");
+            }
+
+            lcd.setCursor(4, 2);
+            lcd.print("DAC check...");
+            lcd.setCursor(0, 3);
+
+            if (SetThrottleByVoltage(1) == false) {
+                lcd.print("[-] ERROR");
+                failed = true;
+            } else {
+                lcd.print("[+] Connected");
+            }
+
+            delay(2000);
+        } while (failed);
     }
 
 };

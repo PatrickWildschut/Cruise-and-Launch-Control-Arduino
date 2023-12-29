@@ -4,17 +4,17 @@
 
 // 0: Read. 1: Cruise control, 2: Misc 3: Settings 4: About 5: Login
 
-const char *currentVersion = "Version: 0.9.8";
+const char *currentVersion = "Version: 0.9.9";
 
-bool LoggedIn = true;
+bool LoggedIn = false;
 
 Mode* Modes[6];
-short CurrentMode = 0; // default to login mode, mode 5 because counting from 0, aka login mode = 6
+short CurrentMode = 5; // default to login mode, mode 5 because counting from 0, aka login mode = 6
 const byte TotalModes = 4; // login mode doesnt count as a mode.
 
 Mode* MiscSubModes[3];
 
-const float idleVoltage = 0.5;
+const float idleVoltage = 0.0;
 
 // Connected pins
 const byte ThrottleIn = A0;
@@ -102,4 +102,33 @@ bool ClutchPressed() {
 
 bool BrakePressed() {
     return analogRead(BrakeIn) > 205;
+}
+
+/* This function returns an approximate RPM for all gears
+   based on car speed.
+
+   gear: current gear, 1-5
+   Out: RPM
+*/
+int GetRPM(int gear) {
+
+    int speed = (int)GetSpeed() - 3; // -3 offset
+    int RPM;
+
+    switch (gear) {
+    case 1:
+        RPM = 150 * speed;
+    case 2:
+        RPM = 75 * speed;
+    case 3:
+        RPM = 52 * speed;
+    case 4:
+        RPM = 43 * speed;
+    case 5:
+        RPM = 34 * speed;
+    }
+
+    if (RPM < 700) RPM = 700;
+
+    return RPM;
 }

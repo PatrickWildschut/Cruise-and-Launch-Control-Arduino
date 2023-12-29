@@ -5,6 +5,7 @@ private:
     // current mode within read mode
     short readIndex = 0;
     const short totalModes = 2;
+    const short recommendedRPM = 2000;
 
 public:
     void Setup() {
@@ -24,11 +25,16 @@ public:
             Default();
             break;
         case 1:
-            readUtilities();
+            recommendedGear();
             break;
         }
 
-        LEDsBasedOnPercentage(GetThrottlePercentage());
+        if (BrakePressed()) {
+            LEDsOnBrake(true);
+        } else {
+            LEDsOnBrake(false);
+            LEDsBasedOnPercentage(GetThrottlePercentage());
+        }
 
         delay(10);
     }
@@ -109,20 +115,39 @@ public:
 
     }
 
-    void readUtilities() {
-        // lcd.setCursor(0, 0);
-        // lcd.print("G Force: " + String(GetGForce()));
-        // lcd.setCursor(16, 0);
-        // lcd.print("G");
+    void recommendedGear() {
+        int gear;
 
-        // lcd.setCursor(0, 1);
-        // lcd.print("a:       " + String(GetAcceleration()));
-        // lcd.setCursor(15, 1);
-        // lcd.print("m/s2");
+        for (gear = 2; gear <= 5; gear++) {
+            if (GetRPM(gear) < recommendedRPM) {
+                break;
+            }
+        }
 
+        lcd.setCursor(1, 0);
+        lcd.print("Recommended Gears");
+
+        lcd.setCursor(0, 2);
+        lcd.print(GearToString(gear - 1) + String(GetRPM(gear - 1)));
         lcd.setCursor(0, 3);
-        lcd.print("Throttle:    " + String(GetThrottle()));
-        lcd.setCursor(18, 3);
-        lcd.print("V");
+        lcd.print(GearToString(gear) + String(GetRPM(gear)));
+    }
+
+    String GearToString(int gear) {
+
+        switch (gear) {
+        case 1:
+            return "    First:  ";
+        case 2:
+            return "    Second: ";
+        case 3:
+            return "    Third:  ";
+        case 4:
+            return "    Fourth: ";
+        case 5:
+            return "    Fifth:  ";
+        }
+
+        return "";
     }
 };

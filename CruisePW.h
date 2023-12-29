@@ -4,7 +4,7 @@ class Cruise : public Mode {
 private:
     const byte minSpeed = 30;
     const float baseVoltage = 1.10;
-    const byte maxSpeedDifference = 10; // Tenth of maximum difference between desired speed and current speed before changing voltage. 10 = 1
+    const byte maxSpeedDifference = 0; // Tenth of maximum difference between desired speed and current speed before changing voltage. 10 = 1
     const float voltageIntervene = 0.01;
 
     bool enabled = false;
@@ -217,15 +217,15 @@ public:
                 currentVoltage -= desiredDifference * voltageIntervene;
             }
         } else {
-            if (deltaSpeed < -0.1 || deltaSpeed > 0.1) {
+            if (deltaSpeed < -0.05 || deltaSpeed > 0.05) {
                 currentVoltage += desiredDifference * voltageIntervene;
             }
         }
 
-        if (currentVoltage > 2) {
-            currentVoltage = 2;
-        } else if (currentVoltage < 0.5) {
-            currentVoltage = 0.5;
+        if (currentVoltage > 2.5) {
+            currentVoltage = 2.5;
+        } else if (currentVoltage < 0.0) {
+            currentVoltage = 0.0;
         }
 
         // desiredDifference < 0 && deltaSpeed > 0 => Aan het klimmen naar desired
@@ -246,13 +246,13 @@ public:
         lcd.print("Speed");
 
         lcd.setCursor(0, 2);
-        lcd.print(" Volt     Delta V  ");
+        lcd.print(" Volt     Desired  ");
 
         lcd.setCursor(2, 3);
         lcd.print(String(currentVoltage));
 
         lcd.setCursor(13, 3);
-        lcd.print(String(oldSpeed - currentSpeed));
+        lcd.print(String(desiredSpeed));
     }
 
     void setCurrentSpeed() {

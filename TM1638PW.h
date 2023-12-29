@@ -107,5 +107,10 @@ void LEDsBasedOnPercentage(short percentage) {
             break;
         }
     }
+}
 
+void LEDsOnBrake(bool isBraking) {
+  for (short i = 2; i < 6; i++) {
+    TM1638.setLED(i, isBraking);
+  }
 }
