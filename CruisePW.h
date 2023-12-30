@@ -4,7 +4,6 @@ class Cruise : public Mode {
 private:
     const byte minSpeed = 30;
     const float baseVoltage = 1.10;
-    const byte maxSpeedDifference = 0; // Tenth of maximum difference between desired speed and current speed before changing voltage. 10 = 1
     const float voltageIntervene = 0.01;
 
     bool enabled = false;
@@ -201,8 +200,8 @@ public:
         float desiredDifference = desiredSpeed - currentSpeed;
         float deltaSpeed = oldSpeed - currentSpeed;
 
-        bool tooSlow = desiredDifference < -maxSpeedDifference * 0.1;
-        bool tooFast = desiredDifference > maxSpeedDifference * 0.1;
+        bool tooSlow = desiredDifference < 0;
+        bool tooFast = desiredDifference > 0;
 
         if (tooSlow) {
             if (deltaSpeed <= -desiredDifference * 0.1) {

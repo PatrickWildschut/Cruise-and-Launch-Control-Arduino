@@ -112,20 +112,28 @@ bool BrakePressed() {
 */
 int GetRPM(int gear) {
 
-    int speed = (int)GetSpeed() - 3; // -3 offset
+    float speed = GetSpeed() - 3; // -3 offset
     int RPM;
 
     switch (gear) {
     case 1:
-        RPM = 150 * speed;
+        RPM = 156 * speed;
+        break;
     case 2:
-        RPM = 75 * speed;
+        RPM = 86 * speed;
+        break;
     case 3:
-        RPM = 52 * speed;
+        RPM = 57 * speed;
+        break;
     case 4:
         RPM = 43 * speed;
+        break;
     case 5:
-        RPM = 34 * speed;
+        RPM = 34.5 * speed;
+        break;
+    default:
+        RPM = 700;
+        break;
     }
 
     if (RPM < 700) RPM = 700;

@@ -116,9 +116,9 @@ public:
     }
 
     void recommendedGear() {
-        int gear;
+        int gear = 2;
 
-        for (gear = 2; gear <= 5; gear++) {
+        for (; gear < 5; gear++) {
             if (GetRPM(gear) < recommendedRPM) {
                 break;
             }
