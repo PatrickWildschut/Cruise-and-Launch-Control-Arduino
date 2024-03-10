@@ -32,8 +32,8 @@ public:
         lcd.setCursor(2, 1);
         lcd.print("Patrick Wildschut");
 
-        lcd.setCursor(3, 2);
-        lcd.print("Copyright 2023");
+        lcd.setCursor(0, 2);
+        lcd.print("Copyright 2023-2024");
 
         lcd.setCursor(3, 3);
         lcd.print(currentVersion);

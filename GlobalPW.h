@@ -4,7 +4,7 @@
 
 // 0: Read. 1: Cruise control, 2: Misc 3: Settings 4: About 5: Login
 
-const char *currentVersion = "Version: 0.9.9";
+const char *currentVersion = "Version: 1.0.0";
 
 bool LoggedIn = false;
 
@@ -110,7 +110,7 @@ bool BrakePressed() {
    gear: current gear, 1-5
    Out: RPM
 */
-int GetRPM(int gear) {
+int GetRPMBasedOnSpeed(int gear) {
 
     float speed = GetSpeed() - 3; // -3 offset
     int RPM;
@@ -139,4 +139,10 @@ int GetRPM(int gear) {
     if (RPM < 700) RPM = 700;
 
     return RPM;
+}
+
+int GetRPM() {
+    // Can't wait until I can code this
+    // Have fun coding future Patrick :)
+    return 0;
 }

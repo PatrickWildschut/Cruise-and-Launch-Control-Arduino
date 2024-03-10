@@ -119,7 +119,7 @@ public:
         int gear = 2;
 
         for (; gear < 5; gear++) {
-            if (GetRPM(gear) < recommendedRPM) {
+            if (GetRPMBasedOnSpeed(gear) < recommendedRPM) {
                 break;
             }
         }
@@ -128,9 +128,9 @@ public:
         lcd.print("Recommended Gears");
 
         lcd.setCursor(0, 2);
-        lcd.print(GearToString(gear - 1) + String(GetRPM(gear - 1)));
+        lcd.print(GearToString(gear - 1) + String(GetRPMBasedOnSpeed(gear - 1)));
         lcd.setCursor(0, 3);
-        lcd.print(GearToString(gear) + String(GetRPM(gear)));
+        lcd.print(GearToString(gear) + String(GetRPMBasedOnSpeed(gear)));
     }
 
     String GearToString(int gear) {

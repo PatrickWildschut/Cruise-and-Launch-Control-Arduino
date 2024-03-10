@@ -19,6 +19,8 @@ private:
 public:
     void Setup() {
         reset();
+
+        ShowBanner("      Rev Test", true);
     }
 
     void Loop() {

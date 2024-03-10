@@ -59,7 +59,7 @@ public:
 
         walkingLEDs();
         updateTM1638();
-        checkPedalsPressed();
+        update = checkPedalsPressed(); // If any pedal is pressed, don't update the currentSpeed
 
         update ? controlSpeed() : void();
         update = !update;
@@ -154,17 +154,17 @@ public:
         }
     }
 
-    void checkPedalsPressed() {
+    bool checkPedalsPressed() {
         // clutch or brake are pressed, if so, reset
         if (CBPressed()) {
             enabled = false;
             reset();
-            return;
+            return true;
         }
 
         // Check if throttle is pressed in more than the voltage we are providing
         // if so, switch to physical pedal, otherwise, just keep cruise control enabled :)
-        bool enabled = !ThrottlePressed(currentVoltage - 0.3);
+        bool enabled = !ThrottlePressed(currentVoltage - 0.1);
 
         setRelays(enabled);
 
@@ -174,6 +174,8 @@ public:
         } else {
             lcd.print(" Release Throttle..");
         }
+
+        return !enabled;
 
     }
 
