@@ -59,7 +59,7 @@ public:
 
         walkingLEDs();
         updateTM1638();
-        update = checkPedalsPressed(); // If any pedal is pressed, don't update the currentSpeed
+        update = !checkPedalsPressed(); // If any pedal is pressed, don't update the currentSpeed
 
         update ? controlSpeed() : void();
         update = !update;

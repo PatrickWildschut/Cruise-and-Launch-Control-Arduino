@@ -4,8 +4,8 @@
 Adafruit_MCP4725 MCP4725;
 
 bool SetThrottleByVoltage(float volt) {
-  // 0.4 is the throttle offset between the DAC and actual throttle, don't worry abt it
-    int toAnalogOut = (volt - 0.4) * 880; // formula: volt * 1000 * 0.88;
+  // 0.25 is the throttle offset between the DAC and actual throttle, don't worry abt it
+    int toAnalogOut = (volt - 0.25) * 880; // formula: volt * 1000 * 0.88;
 
     if (toAnalogOut > 4096) toAnalogOut = 4096;
     
